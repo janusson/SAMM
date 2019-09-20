@@ -1,3 +1,38 @@
+#Working Folders
+Data/
+Misc/
+Output/
+Example Data/
+DriftScope Program Files (backup)/
+
+#Working Files
+*.exe
+*.txt
+*.bat
+*.STS
+*.bin
+*.IDX
+*.INF
+*.cdt
+*.ind
+*.DAT
+*.1dDT
+*.1dMZ
+*.1dRT
+*.jpg
+
+#Excel
+*.xlsx
+*.csv
+
+#Misc Files
+*.zip
+*.xml
+*.lnk
+
+#VSCode settings
+*.vscode
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -102,3 +137,4 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+SAMMtrend/DataExtraction/EJ3-54-53-RC3-Sampling.raw/_mob/history
