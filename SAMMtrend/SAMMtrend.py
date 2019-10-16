@@ -57,7 +57,7 @@ def linearCutoff():
                 # xBound = 150, np.max(xCol)                    #Spectrum axes boundaries and function/line coefficients
                 xBound = np.min(xCol), np.max(xCol)
                 yBound = np.min(yCol), np.max(yCol)
-                coefficients = np.polyfit(xBound, yBound, 1)                    #Set power of cutoff function, 1=linear
+                coefficients = np.polyfit(xBound, yBound, 1)    #Set power of cutoff function, 1=linear
                 # print(coefficients)
                 slope, yInt = coefficients[0], coefficients[1]
                 yNew = []                       #process data - if x's y-value is above function's y-value, set y=yFunc
