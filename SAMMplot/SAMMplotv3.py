@@ -10,7 +10,7 @@ import plotnine
 from plotnine import ggplot, geom_point, aes, theme_bw
 
 #   Import Apex3D data
-rawData = pd.read_csv(r'S:\S-SAMM Programs\SAMM\SAMMplot\SAMMPlotData\EJ3-53-39-RB8-Sampling_Apex3DIons.csv')
+rawData = pd.read_csv(r'D:\Programming\SAMM\SAMMplot\Test Data\EJ3-57-122-BA7-Sampling-2_Apex3DIons.csv')
 
 # xyzData = rawData[['3D_m_z', '3D_Intensity', '3D_TC']].rename(columns={'3D_m_z': 'm/z', '3D_Intensity': 'Area', '3D_TC': 'Drift Time'}) #note: applicable to APEX outs from Driftscope. Non DS exports use different XYZ headers
 xyzData = rawData[['m_z', 'inten', 'area', 'mobility']].rename(columns={'m_z': 'm/z', 'inten': 'Intensity', 'area': 'Area', 'mobility': 'Drift Time'})
