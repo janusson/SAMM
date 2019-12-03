@@ -15,13 +15,12 @@ import sys
 data_folder = r'D:\Programming\SAMM\SAMMmonitor\SAMMmonitor Data\3-72-Example Data\APEX Output'
 
 #system path of targets CSV list
-targets_csv = r'D:\Programming\SAMM\SAMMmonitor\SAMMmonitor Data\Targets(MoH2O-DT).csv'
+targets_csv = r'D:\Programming\SAMM\SAMMmonitor\SAMMmonitor Data\TargetList-SAMMmonitor-testing.csv'
 
 # mz_tolerance = error tolerance for m/z value, in either absolute (default), can set as percentage
 # mob_tolerance = error tolerance for mobility, in percentage 
 # mz_units set to 'abs' as default for absolute mz_tolerance. If not 'abs' (i.e. None or whatever, mz_tolerance is read as decimal fraction)
 mz_tolerance, mob_tolerance = 1, 0.05
-
 
 def read_data_csv(csv_file, delimitchar=',', headers=True):
     """[Reads and passes on data from input csv file]
@@ -145,32 +144,16 @@ def screen_hits_for_single_csv(data_csv, target_dict, mz_tolerance, mob_toleranc
     return hits_dict
 
 def get_output_csv_path(input_csv, output_folder=None, out_string='hits'):
-
+    #Find output folder path if it exists (otherwise make it)
     input_csv_name = os.path.basename(input_csv).replace('.csv', '')
 
     if not output_folder:
         output_folder = os.path.dirname(input_csv)
-        output_folder = os.path.join(output_folder, 'out')
-        # if not os.path.exists(output_folder):
-        #     os.mkdir(output_folder)
+        output_folder = os.path.join(output_folder, 'SAMMmonitor Output')
+        if not os.path.exists(output_folder):
+            os.mkdir(output_folder)
 
     return os.path.join(output_folder, f'{input_csv_name}-{out_string}.csv')
-
-"""
-#       Find output folder if not there, then create one
-def makeOutputDir():
-        if os.path.isdir(os.path.join(dataDir, "APEX Output")):
-                print('Writing to existing Apex Output directory. Old files will be overwritten.')
-                outputDir =  os.path.join(dataDir, "APEX Output")
-                return outputDir
-        else:
-                os.mkdir(os.path.join(dataDir, "APEX Output"))
-                outputDir = os.path.join(dataDir, "APEX Output")
-                return outputDir
-                # outputDir = os.mkdir(os.path.join(dataDir, "APEX Output"))
-                # outputDir = os.path.join(dataDir, "APEX Output")
-outputDir = makeOutputDir()
-"""
 
 def write_output_csv(output_csv, headers=['target_molecule', 'id','obs_mz','Rt', 'obs_mobility', 'intensity'],
                     delimitchar=','):
@@ -187,10 +170,7 @@ def append_output_csv(output_csv, write_list, delimitchar=','):
             writer = csv.writer(ofile, delimiter=delimitchar)
             writer.writerow(write_list)
 
-def write_hits_for_single_csv(data_csv, target_dict,
-                            mz_tolerance,
-                            mob_tolerance,
-                            out_folder=None,
+def write_hits_for_single_csv(data_csv, target_dict, mz_tolerance, mob_tolerance, out_folder=None,
                             headers=['target_molecule','id', 'obs_mz','Rt',
                                         'obs_mobility', 'intensity']):
 
@@ -224,8 +204,7 @@ def main(data_folder, targets_csv, mz_tolerance, mob_tolerance, mz_units='abs'):
    
     target_dict = fetch_target_data(targets_csv)
 
-    write_hits_multiple_csvs(target_dict, data_folder, 
-                        mz_tolerance, mob_tolerance)
+    write_hits_multiple_csvs(target_dict, data_folder, mz_tolerance, mob_tolerance)
 
 if __name__ == '__main__':
     main(data_folder, targets_csv, mz_tolerance, mob_tolerance)
