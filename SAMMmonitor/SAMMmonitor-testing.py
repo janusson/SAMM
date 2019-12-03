@@ -1,12 +1,27 @@
 """
-TWIMMonitor-3-16.py
-EJ270619
-Script for screening APEX3D generated ion mobility data to find intensities of known targets from list.
-Script modified for EJ3-16 APEXOUT Export
+Filename: SAMMmonitor-testing.py
+Original: TWIMMonitor-3-16.py
+Created: EJ270619
+Python Version: 3.7.4 64-bit
+Purpose: Script for screening APEX3D generated ion mobility data to find intensities of known targets from list.
+Notes: Script modified for EJ3-16 APEXOUT Export
 """
+
 import os
 import csv
 import sys
+
+#system path of Apex3d Data
+data_folder = r'D:\Programming\SAMM\SAMMmonitor\SAMMmonitor Data\3-72-Example Data\APEX Output'
+
+#system path of targets CSV list
+targets_csv = r'D:\Programming\SAMM\SAMMmonitor\SAMMmonitor Data\Targets(MoH2O-DT).csv'
+
+# mz_tolerance = error tolerance for m/z value, in either absolute (default), can set as percentage
+# mob_tolerance = error tolerance for mobility, in percentage 
+# mz_units set to 'abs' as default for absolute mz_tolerance. If not 'abs' (i.e. None or whatever, mz_tolerance is read as decimal fraction)
+mz_tolerance, mob_tolerance = 1, 0.05
+
 
 def read_data_csv(csv_file, delimitchar=',', headers=True):
     """[Reads and passes on data from input csv file]
@@ -67,10 +82,15 @@ def check_hit(hit_mz, hit_mobility, target_data, mz_tolerance, mob_tolerance, mz
         If value is a match, returns true. Otherwise, returns false]
     
     Arguments:
-        
+        hit_mz = [observed m/z value to check against target m/z value]
+        hit_mobility = [observed m/z value to check against target m/z value]
+        target_data = [APEX3D exported data file from .items in target_dict dictionary]
+        mz_tolerance = [Selected threshold entered for m/z tolerance required for a 'hit' to be recorded]
+        mob_tolerance = [Selected threshold entered for mobility tolerance in BINS required for a 'hit' to be recorded]
+        mz_units='abs' = [Changed if absolute m/z threshold is not used (i.e. a percentage instead)]
     
     Returns:
-        
+        True if target value pair is  within acceptable tolerance. Returns False otherwise.
     """
     # t_mz, t_mobility  = target m/z, target mobility  
     t_mz, t_mobility = target_data['mz'], target_data['mobility']
@@ -92,13 +112,17 @@ def check_hit(hit_mz, hit_mobility, target_data, mz_tolerance, mob_tolerance, mz
     return False
 
 def screen_hits_for_single_csv(data_csv, target_dict, mz_tolerance, mob_tolerance, mz_units='abs'):
-    """[]
+    """[Appends "hits" to a new list, "hits_dict" for each "target"]
     
     Arguments:
-        
+        data_csv = [CSV in which original APEX3D output data is stored]
+        target_dict = [From fetch_target_data, list of target m/s vs. mob pairs provided by user in CSV form]
+        mz_tolerance = [Selected threshold entered for m/z tolerance required for a 'hit' to be recorded]
+        mob_tolerance = [Selected threshold entered for mobility tolerance in BINS required for a 'hit' to be recorded]
+        mz_units='abs' = [Changed if absolute m/z threshold is not used (i.e. a percentage instead)]
     
     Returns:
-        
+        hits_dict = [A dictionary of targets returning True from check_hit]
     """
     hits_dict = {}
     hits_list = []
@@ -120,8 +144,7 @@ def screen_hits_for_single_csv(data_csv, target_dict, mz_tolerance, mob_toleranc
     
     return hits_dict
 
-def get_output_csv_path(input_csv, output_folder=None,
-                        out_string='hits'):
+def get_output_csv_path(input_csv, output_folder=None, out_string='hits'):
 
     input_csv_name = os.path.basename(input_csv).replace('.csv', '')
 
@@ -132,6 +155,22 @@ def get_output_csv_path(input_csv, output_folder=None,
         #     os.mkdir(output_folder)
 
     return os.path.join(output_folder, f'{input_csv_name}-{out_string}.csv')
+
+"""
+#       Find output folder if not there, then create one
+def makeOutputDir():
+        if os.path.isdir(os.path.join(dataDir, "APEX Output")):
+                print('Writing to existing Apex Output directory. Old files will be overwritten.')
+                outputDir =  os.path.join(dataDir, "APEX Output")
+                return outputDir
+        else:
+                os.mkdir(os.path.join(dataDir, "APEX Output"))
+                outputDir = os.path.join(dataDir, "APEX Output")
+                return outputDir
+                # outputDir = os.mkdir(os.path.join(dataDir, "APEX Output"))
+                # outputDir = os.path.join(dataDir, "APEX Output")
+outputDir = makeOutputDir()
+"""
 
 def write_output_csv(output_csv, headers=['target_molecule', 'id','obs_mz','Rt', 'obs_mobility', 'intensity'],
                     delimitchar=','):
@@ -181,26 +220,12 @@ def write_hits_multiple_csvs(target_dict, csv_folder,
                                 mz_tolerance, mob_tolerance,
                                 out_folder)
 
-    #system path of Apex3d Data
-data_folder = 'S:/Experimental Data/EJ3-16-MoBatch/EJ3-16-IMSmonitor/Sample3-Standard'
-    #system path of targets CSV list
-targets_csv = 'S:/Experimental Data/EJ3-16-MoBatch/EJ3-16-IMSmonitor/Sample3-Standard/EJ3-16-Peaks.csv'
-
-# mz_tolerance = error tolerance for m/z value, in either absolute (default), can set as percentage
-# mob_tolerance = error tolerance for mobility, in percentage 
-mz_tolerance, mob_tolerance = 1, 0.05
-
-#mz_units set to 'abs' as default for absolute mz_tolerance. If not 'abs' (i.e. None or whatever, mz_tolerance is read as decimal fraction)
-
-def main(data_folder, targets_csv, mz_tolerance,
-            mob_tolerance, mz_units='abs'): 
+def main(data_folder, targets_csv, mz_tolerance, mob_tolerance, mz_units='abs'): 
    
     target_dict = fetch_target_data(targets_csv)
 
     write_hits_multiple_csvs(target_dict, data_folder, 
                         mz_tolerance, mob_tolerance)
-
-
 
 if __name__ == '__main__':
     main(data_folder, targets_csv, mz_tolerance, mob_tolerance)
