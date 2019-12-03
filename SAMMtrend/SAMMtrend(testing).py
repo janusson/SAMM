@@ -23,7 +23,8 @@ def findDataDir():
         dataDir = os.path.expanduser(input())
         return dataDir
 # dataDir = findDataDir()
-dataDir = r"S:\Programming\SAMM\SAMMtrend\DataExtraction\SAMMTrendTest\out" #TESTING PURPOSES
+
+dataDir = r"D:\Programming\SAMM\SAMMtrend\SAMMtrend Data\3-72-Example Data" #TESTING PURPOSES
 
 def getFilenames(directory):
         dataIDs = []
