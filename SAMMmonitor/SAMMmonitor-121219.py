@@ -12,10 +12,12 @@ import csv
 import sys
 
 #system path of Apex3d Data
-data_folder = r'D:\Programming\SAMM\SAMMmonitor\SAMMmonitor Data\3-72-Example Data\APEX Output'
+data_folder = r'E:\3-Work\SAMM\Experimental Data\EJ3-60-SAMM3-MoMonitoring\EJ3-60-BA1 Files\EJ3-60-BA1'
+# data_folder = r'D:\Programming\SAMM\SAMMmonitor\SAMMmonitor Data\3-72-Example Data\APEX Output'
 
 #system path of targets CSV list
-targets_csv = r'D:\Programming\SAMM\SAMMmonitor\SAMMmonitor Data\TargetList-SAMMmonitor-testing.csv'
+targets_csv = r'E:\3-Work\SAMM\Experimental Data\EJ3-60-SAMM3-MoMonitoring\EJ3-60-BA1 Files\EJ3-60-Peaks.csv'
+# targets_csv = r'D:\Programming\SAMM\SAMMmonitor\SAMMmonitor Data\TargetList-SAMMmonitor-testing.csv'
 
 # mz_tolerance = error tolerance for m/z value, in either absolute (default), can set as percentage
 # mob_tolerance = error tolerance for mobility, in percentage 
