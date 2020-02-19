@@ -1,7 +1,7 @@
 """
 Filename: SAMMmonitor-testing.py
 Original: TWIMMonitor-3-16.py
-Created: EJ270619
+Created: 270619
 Python Version: 3.7.4 64-bit
 Purpose: Script for screening APEX3D generated ion mobility data to find intensities of known targets from list.
 Notes: Script modified for EJ3-16 APEXOUT Export
