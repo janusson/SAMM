@@ -2,7 +2,8 @@
 SAMM3Dextract-190220.py
 Eric Janusson
 Python 3.7.4 (64-bit)
-Usage: Mass/Charge/Mobility Extraction from Waters .RAW files using high-density APEX3D extraction.
+Usage: Mass/Charge/Mobility Extraction from Waters .RAW files using high-density APEX3D extraction. 
+Paste data directory containing .RAW files to be exported into 3D CSV files in the given directory as "APEX Output"
 """
 
 import os
