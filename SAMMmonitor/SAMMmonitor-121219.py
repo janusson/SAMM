@@ -1,9 +1,10 @@
 """
-Filename: SAMMmonitor-testing.py
+Filename: SAMMmonitor-121219.py
 Original: TWIMMonitor-3-16.py
-Created: EJ270619
+Created: 270619
 Python Version: 3.7.4 64-bit
-Purpose: Script for screening APEX3D generated ion mobility data to find intensities of known targets from list.
+Purpose: Script for screening APEX3D-generated ion mobility data to find intensities of known targets from list and generate a 'Hit list'. Hit list is exported to "SAMMmonitor Output'
+in same folder as APEX3D data.
 Notes: Script modified for EJ3-16 APEXOUT Export
 """
 
@@ -12,12 +13,19 @@ import csv
 import sys
 
 #system path of Apex3d Data
+<<<<<<< HEAD
 data_folder = r'E:\3-Work\SAMM\Experimental Data\EJ3-60-SAMM3-MoMonitoring\EJ3-60-BA1 Files\EJ3-60-BA1'
 # data_folder = r'D:\Programming\SAMM\SAMMmonitor\SAMMmonitor Data\3-72-Example Data\APEX Output'
 
 #system path of targets CSV list
 targets_csv = r'E:\3-Work\SAMM\Experimental Data\EJ3-60-SAMM3-MoMonitoring\EJ3-60-BA1 Files\EJ3-60-Peaks.csv'
 # targets_csv = r'D:\Programming\SAMM\SAMMmonitor\SAMMmonitor Data\TargetList-SAMMmonitor-testing.csv'
+=======
+data_folder = r'D:\2-SAMM\SAMM-Self-Assembly-Mobility-Mapping - Paper Folder\Programming\S-SAMM Programs\SAMM\SAMMmonitor\SAMMmonitor Data\3-72-Example Data\APEX Output'
+
+#system path of targets CSV list
+targets_csv = r'D:\2-SAMM\SAMM-Self-Assembly-Mobility-Mapping - Paper Folder\Programming\S-SAMM Programs\SAMM\SAMMmonitor\SAMMmonitor Data\TargetList-SAMMmonitor-testing.csv'
+>>>>>>> 93c9f771b924fd2a9634602bd781986e0c44a29f
 
 # mz_tolerance = error tolerance for m/z value, in either absolute (default), can set as percentage
 # mob_tolerance = error tolerance for mobility, in percentage 
@@ -172,9 +180,11 @@ def append_output_csv(output_csv, write_list, delimitchar=','):
             writer = csv.writer(ofile, delimiter=delimitchar)
             writer.writerow(write_list)
 
-def write_hits_for_single_csv(data_csv, target_dict, mz_tolerance, mob_tolerance, out_folder=None,
-                            headers=['target_molecule','id', 'obs_mz','Rt',
-                                        'obs_mobility', 'intensity']):
+def write_hits_for_single_csv(data_csv, target_dict, mz_tolerance, mob_tolerance, 
+                                out_folder=None, headers=['Target Formula','Index', 
+                                'Observed m/z','m/z No Cal', 'RT', 'Intensity', 'Area', 'Counts', 'Mobility']):
+                            # headers=['target_molecule','id', 'obs_mz','Rt',
+                            #             'obs_mobility', 'intensity']):
 
     print(f'target_dict = {target_dict}')
     hits_dict = screen_hits_for_single_csv(data_csv, target_dict, 
