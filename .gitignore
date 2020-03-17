@@ -19,7 +19,10 @@ DriftScope Program Files (backup)/
 *.1dDT
 *.1dMZ
 *.1dRT
+
+#Images
 *.jpg
+*.png
 
 #Excel
 *.xlsx
