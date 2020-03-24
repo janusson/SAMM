@@ -4,7 +4,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from matplotlib import pyplot as plt
+# %matplotlib inline
+
     # Custom colour schemes:
 def setColourScheme():
         # miami sunset
@@ -82,20 +83,30 @@ dims = dims[dims['Area']<440000]
 mz, dt, area, = (dims['m/z'], dims['DT'], dims['Area'])
 ppmError, dtError, countsError = (dims['m/z Error'], dims['DT Error'], dims['Area Error'])
 
-dims.describe()
+dims = dims.sort_values('Area')
 
 sns.set(style='ticks')
-sns.scatterplot(x=mz, 
-                y=dt,
-                hue=area,
-                size=area
+cmap = sns.cubehelix_palette(dark=.3, light=.8, as_cmap=True)
+ax = sns.scatterplot(x='m/z', 
+                y='DT',
+                data=dims,
+                hue='Area',
+                # hue_norm=(0, 100),
+                size='Area',
+                sizes=(20, 200),
+                linewidth=0,
+                edgecolor=None,
+                alpha=0.60,
+                palette=cmap
                 )
+                
+plt.xlabel('$\it{m/z}$')
+plt.ylabel('Drift Time (ms)')
 plt.show()
-
 
                 # style=area,
                 # hue=area, 
-                # style=None, 
+                
                 # size=None, 
                 # data=trimData, 
                 # palette=None, 
@@ -119,9 +130,6 @@ plt.show()
                 # ax=None
 
 # pd.Series(np.log()
-
-
-
 
 ###
 
