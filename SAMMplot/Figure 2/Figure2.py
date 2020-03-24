@@ -64,7 +64,6 @@ def importSAMM3D(kwargs = None):
     newApexDF = pd.DataFrame(
         zip(x, y, z, xError, yError, zError),
         columns=["m/z", "DT", "Area", "m/z Error", "DT Error", "Area Error"])
-
     return newApexDF
 
 # Data Selection
@@ -72,15 +71,17 @@ specData = importSAMM2D()
 data = importSAMM3D()
 
     # Quick Variables
-userInput = "57-24-RA2"
 mz = data["m/z"]
 dt = data["DT"]
 area = data["Area"]
 ppmError = data["m/z Error"]
 dtError = data["DT Error"]
 countsError = data["Area Error"]
-
 print("Plotting figures...")
+
+data.head()
+trimData = data.drop(columns = ['m/z Error', 'DT Error', 'Area Error'])
+# sns.pairplot(trimData)
 
 ### PLOTTING
     # Plot Regression Marginals
@@ -125,7 +126,6 @@ print("Plotting figures...")
 # ax[1].set_title("Mass Spectrum Mo Ions")
 # ax[1].set_xlabel('m/z')
 # ax[1].set_ylabel('Counts')
-
 # plt.show()
 
 # fig2, ax2 = plt.supplots()
@@ -151,8 +151,3 @@ print("Plotting figures...")
 # sns.jointplot(x='m/z', y='DT', data=data, kind='reg')
 # plt.xlim(150, 1500)
 # plt.ylim(2, 10)
-
-# data.head()
-# trimData = data.drop(columns = ['m/z Error', 'DT Error', 'Area Error'])
-# sns.pairplot(trimData)
-# sns.stripplot(x='m/z', y='Area', data=trimData, jitter = True)
