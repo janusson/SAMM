@@ -1,4 +1,7 @@
-# Figure1.py - Python 3.7.4 - Eric Janusson - 150320
+# Figure1.py
+# Python 3.7.4 
+# Eric Janusson 
+# 150320
 import os
 import pandas as pd
 import numpy as np
@@ -103,10 +106,8 @@ ax = sns.scatterplot(x='m/z',
 plt.xlabel('$\it{m/z}$')
 plt.ylabel('Drift Time (ms)')
 plt.show()
-
                 # style=area,
                 # hue=area, 
-                
                 # size=None, 
                 # data=trimData, 
                 # palette=None, 
