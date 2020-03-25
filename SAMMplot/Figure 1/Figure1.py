@@ -99,7 +99,7 @@ ax = sns.scatterplot(x='m/z',
                 alpha=0.60,
                 palette=cmap
                 )
-                
+
 plt.xlabel('$\it{m/z}$')
 plt.ylabel('Drift Time (ms)')
 plt.show()
