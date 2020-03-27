@@ -68,44 +68,53 @@ def importSAMM3D(kwargs = None):
 specData, fileID = importSAMM2D()
 data = importSAMM3D()
 
-    ## Data processing and plotting
-    # m/z min
-dims = pd.DataFrame(data[data['m/z']>150])
-    # m/z max
-dims = dims[dims['m/z']<3000]
-    # DT min
-# dims = dims[dims['DT']>1]
-    # DT max
-# dims = dims[dims['DT']<10000]
-    # area min
-dims = dims[dims['Area']>90000]
-    # area max
-dims = dims[dims['Area']<440000]
+    ### Data Export
+def exportData(csvName): 
+        return csvName.to_csv('Figure1 Data Export (Figure1.py).csv', index=False)
+
+    # Data Processing
+dims = data[(data['m/z']>150) & (data['m/z']<1500) & (data['DT']>1) & (data['DT']<10) & (data['Area']>50000)]
+dims[r'log(Area)'] = np.log(dims['Area'])
+# dims = dims.sort_values('Area')
+dims = dims.sort_values(by = r'log(Area)')
+
+
 
     ## Plotting
 mz, dt, area, = (dims['m/z'], dims['DT'], dims['Area'])
 ppmError, dtError, countsError = (dims['m/z Error'], dims['DT Error'], dims['Area Error'])
 
-dims = dims.sort_values('Area')
 
-sns.set(style='ticks')
-cmap = sns.cubehelix_palette(dark=.3, light=.8, as_cmap=True)
-ax = sns.scatterplot(x='m/z', 
-                y='DT',
-                data=dims,
-                hue='Area',
-                # hue_norm=(0, 100),
-                size='Area',
-                sizes=(20, 200),
-                linewidth=0,
-                edgecolor=None,
-                alpha=0.60,
-                palette=cmap
-                )
 
-plt.xlabel('$\it{m/z}$')
-plt.ylabel('Drift Time (ms)')
-plt.show()
+    ### ggplot Style
+import plotnine
+from plotnine import ggplot, geom_point, aes, theme_bw
+ax = ggplot(dims) + geom_point(aes(x = "m/z", y = "DT", color = r"log(Area)", size = "Area")) + theme_bw()
+print(ax)
+
+# headers = ['Nuclearity', 'm/z', r'DT (bins)']
+# df = pd.read_csv(r'D:\2-SAMM\SAMM - Data Workup Folder\EJ3-60-SAMM3-MoMonitoring\EJ3-60 - SAMM Monitor\EJ3-60-HitList-Z2.csv', names = headers)
+# df['Mass'] = df['m/z'].apply(lambda x: x**2)
+
+    ### Seaborn Style 
+# sns.set(style='ticks')
+# cmap = sns.cubehelix_palette(dark=.3, light=.8, as_cmap=True)
+# ax = sns.scatterplot(x='m/z', 
+#                 y='DT',
+#                 data=dims,
+#                 hue='Area',
+#                 # hue_norm=(0, 100),
+#                 size='Area',
+#                 sizes=(20, 200),
+#                 linewidth=0,
+#                 edgecolor=None,
+#                 alpha=0.60,
+#                 palette=cmap
+#                 )
+
+# plt.xlabel('$\it{m/z}$')
+# plt.ylabel('Drift Time (ms)')
+# plt.show()
                 # style=area,
                 # hue=area, 
                 # size=None, 
@@ -130,12 +139,10 @@ plt.show()
                 # legend="brief", 
                 # ax=None
 
-# pd.Series(np.log()
-
-###
 
 
-    #MPL Style
+
+    ### MPL Style
 # import matplotlib.pyplot as plt
 # fig, ax = plt.subplots(2, 1, sharey=True)
 
