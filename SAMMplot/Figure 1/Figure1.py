@@ -5,11 +5,9 @@
 import os
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 # %matplotlib inline
 
-    # Custom colour schemes:
+# Custom colour schemes:
 def setColourScheme():
         # miami sunset
     mSun = ['#003f5c', '#444e86', '#955196', '#dd5182', '#ff6e54', '#ffa600']
@@ -21,11 +19,17 @@ def setColourScheme():
     bojackGrad ='#D04F6D #84486A #9C4670 #A75C87 #8C5D8B #7088B3 #71B2CA #8EE7F0 #B7F9F9 #A6F5F7'.split(' ')
     return(mSun, malDiv, malPal, bojackGrad)
 mSun, malDiv, malPal, bojackGrad = setColourScheme()
-    # Data import functions (From TWIMExtract and APEX3D Output) customized to user input (default: ID: 57-24-RA2)
+# Data import functions (From TWIMExtract and APEX3D Output) customized to user input (default: ID: 57-24-RA2)
 def importSAMM2D(kwargs = None):
         ### Load 2D CSV files for FR, Z1, Z2
+    
     # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): ') #TEST
+
     # userInput = input('Example: 57-24-RA2') #TEST
+
+    # headers = ['Nuclearity', 'm/z', r'DT (bins)']
+    # df = pd.read_csv(r'D:\2-SAMM\SAMM - Data Workup Folder\EJ3-60-SAMM3-MoMonitoring\EJ3-60 - SAMM Monitor\EJ3-60-HitList-Z2.csv', names = headers)
+
     userInput = r'57-24-RA2' # TEST
     basePath = r'D:\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\Experimental Data\3-57-SAMM2\2DExtract(3-57-2)'
     frMS = str(basePath + r'\Full Range\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' + userInput + r'-Sampling-2_fn-1_#FullRange-POMSolv-Rangefile.txt_raw.csv')
@@ -64,132 +68,41 @@ def importSAMM3D(kwargs = None):
         zip(x, y, z, xError, yError, zError),
         columns=['m/z', 'DT', 'Area', 'm/z Error', 'DT Error', 'Area Error'])
     return newApexDF
-    # Quick Variables
+
+### Create Dataframes
 specData, fileID = importSAMM2D()
 data = importSAMM3D()
+### Data Export (opt.)
+# def exportData(csvName): 
+#         return csvName.to_csv('Figure1 Data Export (Figure1.py).csv', index=False)
 
-    ### Data Export
-def exportData(csvName): 
-        return csvName.to_csv('Figure1 Data Export (Figure1.py).csv', index=False)
-
-    # Data Processing
+## Data Processing
+# Trim data limits for plot
 dims = data[(data['m/z']>150) & (data['m/z']<1500) & (data['DT']>1) & (data['DT']<10) & (data['Area']>50000)]
-dims[r'log(Area)'] = np.log(dims['Area'])
-# dims = dims.sort_values('Area')
-dims = dims.sort_values(by = r'log(Area)')
-
-
-
-    ## Plotting
 mz, dt, area, = (dims['m/z'], dims['DT'], dims['Area'])
 ppmError, dtError, countsError = (dims['m/z Error'], dims['DT Error'], dims['Area Error'])
 
+# Scales
+# dims[r'log(Area)'] = dims['Area'].apply(lambda x:np.log(x))
+# dims[r'log(Area)'] = dims['Area'].apply(lambda x:np.log(x))
 
+# Sort
+# dims = dims.sort_values('Area')
+# areaSort = dims.sort_values(by = r'log(Area)')
 
-    ### ggplot Style
-import plotnine
-from plotnine import ggplot, geom_point, aes, theme_bw
-ax = ggplot(dims) + geom_point(aes(x = "m/z", y = "DT", color = r"log(Area)", size = "Area")) + theme_bw()
-print(ax)
+mzSort = dims.sort_values(by = r'm/z', inplace=True)
 
-# headers = ['Nuclearity', 'm/z', r'DT (bins)']
-# df = pd.read_csv(r'D:\2-SAMM\SAMM - Data Workup Folder\EJ3-60-SAMM3-MoMonitoring\EJ3-60 - SAMM Monitor\EJ3-60-HitList-Z2.csv', names = headers)
-# df['Mass'] = df['m/z'].apply(lambda x: x**2)
+#normalize
+# df.apply(lambda x: pd.value_counts(x, normalize=True))
 
-    ### Seaborn Style 
-# sns.set(style='ticks')
-# cmap = sns.cubehelix_palette(dark=.3, light=.8, as_cmap=True)
-# ax = sns.scatterplot(x='m/z', 
-#                 y='DT',
-#                 data=dims,
-#                 hue='Area',
-#                 # hue_norm=(0, 100),
-#                 size='Area',
-#                 sizes=(20, 200),
-#                 linewidth=0,
-#                 edgecolor=None,
-#                 alpha=0.60,
-#                 palette=cmap
-#                 )
+import plotly.graph_objects as go
+fig = go.Figure(go.Histogram2dContour(
+        x = mz,
+        y = dt,
+        ))
+# fig.show()
 
-# plt.xlabel('$\it{m/z}$')
-# plt.ylabel('Drift Time (ms)')
-# plt.show()
-                # style=area,
-                # hue=area, 
-                # size=None, 
-                # data=trimData, 
-                # palette=None, 
-                # hue_order=None, 
-                # hue_norm=None, 
-                # sizes=None, 
-                # size_order=None, 
-                # size_norm=None, 
-                # markers=True, 
-                # style_order=None, 
-                # x_bins=None, 
-                # y_bins=None, 
-                # units=None, 
-                # estimator=None, 
-                # ci=95, 
-                # n_boot=1000, 
-                # alpha="auto", 
-                # x_jitter=None, 
-                # y_jitter=None, 
-                # legend="brief", 
-                # ax=None
+# go.Histogram?
 
-
-
-
-    ### MPL Style
-# import matplotlib.pyplot as plt
-# fig, ax = plt.subplots(2, 1, sharey=True)
-
-# Standard plot: 
-# ax.set_title('Drift Time of Mo Ions')
-# ax.set_xlabel('Drift Time (ms)')
-# ax.set_ylabel('Intensity')
-    # dt data
-# ax[0].plot(specData['Drift Time'].index, 
-#         specData['Intensity'],
-#         # marker='v',
-#         linestyle = '--',
-#         color = mSun[1]
-#         )
-# ax[0].set_title('Drift Time of Mo Ions')
-# ax[0].set_xlabel('Drift Time (ms)')
-# ax[0].set_ylabel('Intensity')
-#     # ms data
-# ax[1].plot(specData['m/z'], 
-#         specData['Counts'],
-#         color = mSun[4]
-#         )
-# ax[1].set_title('Mass Spectrum Mo Ions')
-# ax[1].set_xlabel('m/z')
-# ax[1].set_ylabel('Counts')
-# plt.show()
-
-# fig2, ax2 = plt.supplots()
-# ax2.plot(specData['m/z'], 
-#         specData['Counts'],
-#         color = mSun[4]
-#         )
-
-# fig, ax = plt.subplots(figsize = (6, 6))
-# sns.scatterplot(x= 'm/z', 
-#             y = 'DT', 
-#             data = data,
-#             # hue = 'Area',
-#             # size = 'Area Error',
-#             # palette = {},
-#             # xlim=(150, 1500),
-#             # ylim=(1,10),
-#             )
-# plt.xlim(150, 1500)
-# plt.ylim(2, 10)
-
-# sns.distplot(data['DT'], kde=True, bins=300)
-# sns.jointplot(x='m/z', y='DT', data=data, kind='reg')
-# plt.xlim(150, 1500)
-# plt.ylim(2, 10)
+# Figure export
+# fig.write_html('first_figure.html', auto_open=True)
