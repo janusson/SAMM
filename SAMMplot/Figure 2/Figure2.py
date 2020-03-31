@@ -2,152 +2,193 @@
 # Python 3.7.4
 # Eric Janusson
 # 150320
-# Style from: https://seaborn.pydata.org/examples/regression_marginals.html
+# Example styles: https://seaborn.pydata.org/examples/regression_marginals.html
+# https://altair-viz.github.io/gallery/scatter_marginal_hist.html
+
 import os
-from plotnine import *
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from matplotlib import pyplot as plt
 
-    # Custom colour scheme:
+# Custom colour schemes:
+def setColourScheme():
     # miami sunset
-mSun = ['#003f5c', '#444e86', '#955196', '#dd5182', '#ff6e54', '#ffa600']
+    mSun = ['#003f5c', '#444e86', '#955196', '#dd5182', '#ff6e54', '#ffa600']
     # maliwan divergent
-malDiv = "#1e394a #7175ab #ffa7ef #ff7087 #cc6200".split(' ')
+    malDiv = '#1e394a #7175ab #ffa7ef #ff7087 #cc6200'.split(' ')
     # maliwan palette
-malPal = "#1e394a #414471 #893e78 #c23a53 #cc6200".split(' ')
+    malPal = '#1e394a #414471 #893e78 #c23a53 #cc6200'.split(' ')
     # bojack gradient
-bojackGrad ='#D04F6D #84486A #9C4670 #A75C87 #8C5D8B #7088B3 #71B2CA #8EE7F0 #B7F9F9 #A6F5F7'.split(" ")
+    bojackGrad = '#D04F6D #84486A #9C4670 #A75C87 #8C5D8B #7088B3 #71B2CA #8EE7F0 #B7F9F9 #A6F5F7'.split(
+        ' ')
+    return(mSun, malDiv, malPal, bojackGrad)
 
-def importSAMM2D(kwargs = None):
-        ### Load 2D CSV files for FR, Z1, Z2
-    # print("Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): ") #TEST
-    # userInput = input("Example: 57-24-RA2") #TEST
-    userInput = r"57-24-RA2" # TEST
-    basePath = r"D:\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\Experimental Data\3-57-SAMM2\2DExtract(3-57-2)"
-    frMS = str(basePath + r"\Full Range\MS\EJ3-" + userInput + r"-Sampling-2\MZ_EJ3-" + userInput + r"-Sampling-2_fn-1_#FullRange-POMSolv-Rangefile.txt_raw.csv")
-    frDT = str(basePath + r"\Full Range\DT\EJ3-" + userInput + r"-Sampling-2\DT_EJ3-" + userInput + r"-Sampling-2_fn-1_#FullRange-POMSolv-Rangefile.txt_raw.csv")
-    z1MS = str(basePath + r"\Z1\MS\EJ3-" + userInput + r"-Sampling-2\MZ_EJ3-" + userInput + r"-Sampling-2_fn-1_#POMSolv-Z1-RuleFile.rul_raw.csv")
-    z1DT = str(basePath + r"\Z1\DT\EJ3-" + userInput + r"-Sampling-2\DT_EJ3-" + userInput + r"-Sampling-2_fn-1_#POMSolv-Z1-RuleFile.rul_raw.csv")
-    z2MS = str(basePath + r"\Z2\MS\EJ3-" + userInput + r"-Sampling-2\MZ_EJ3-" + userInput + r"-Sampling-2_fn-1_#POMSolv-Z2-RuleFile.rul_raw.csv")
-    z2DT = str(basePath + r"\Z2\DT\EJ3-" + userInput + r"-Sampling-2\DT_EJ3-" + userInput + r"-Sampling-2_fn-1_#POMSolv-Z2-RuleFile.rul_raw.csv")
+mSun, malDiv, malPal, bojackGrad = setColourScheme()
+# Data import functions (From TWIMExtract and APEX3D Output) customized to user input (default: ID: 57-24-RA2)
+
+def importSAMM2D(kwargs=None):
+    # Load 2D CSV files for FR, Z1, Z2
+
+    # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): ') #TEST
+
+    # userInput = input('Example: 57-24-RA2') #TEST
+
+    # headers = ['Nuclearity', 'm/z', r'DT (bins)']
+    # df = pd.read_csv(r'D:\2-SAMM\SAMM - Data Workup Folder\EJ3-60-SAMM3-MoMonitoring\EJ3-60 - SAMM Monitor\EJ3-60-HitList-Z2.csv', names = headers)
+
+    userInput = r'57-158-BC4'  # TEST
+    basePath = r'D:\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\Experimental Data\3-57-SAMM2\2DExtract(3-57-2)'
+    frMS = str(basePath + r'\Full Range\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
+               userInput + r'-Sampling-2_fn-1_#FullRange-POMSolv-Rangefile.txt_raw.csv')
+    frDT = str(basePath + r'\Full Range\DT\EJ3-' + userInput + r'-Sampling-2\DT_EJ3-' +
+               userInput + r'-Sampling-2_fn-1_#FullRange-POMSolv-Rangefile.txt_raw.csv')
+    z1MS = str(basePath + r'\Z1\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
+               userInput + r'-Sampling-2_fn-1_#POMSolv-Z1-RuleFile.rul_raw.csv')
+    z1DT = str(basePath + r'\Z1\DT\EJ3-' + userInput + r'-Sampling-2\DT_EJ3-' +
+               userInput + r'-Sampling-2_fn-1_#POMSolv-Z1-RuleFile.rul_raw.csv')
+    z2MS = str(basePath + r'\Z2\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
+               userInput + r'-Sampling-2_fn-1_#POMSolv-Z2-RuleFile.rul_raw.csv')
+    z2DT = str(basePath + r'\Z2\DT\EJ3-' + userInput + r'-Sampling-2\DT_EJ3-' +
+               userInput + r'-Sampling-2_fn-1_#POMSolv-Z2-RuleFile.rul_raw.csv')
     paths = [frMS, frDT, z1MS, z1DT, z2MS, z2DT]
-    frScatter = ([pd.read_csv(i, skiprows=1) for i in paths if os.path.lexists(i) and i[104:106] == r"Fu"])
-    z1Scatter = ([pd.read_csv(i, skiprows=1) for i in paths if os.path.lexists(i) and i[104:106] == r"Z1"])
-    z2Scatter = ([pd.read_csv(i, skiprows=1) for i in paths if os.path.lexists(i) and i[104:106] == r"Z2"])
+    frScatter = ([pd.read_csv(i, skiprows=1)
+                  for i in paths if os.path.lexists(i) and i[104:106] == r'Fu'])
+    z1Scatter = ([pd.read_csv(i, skiprows=1)
+                  for i in paths if os.path.lexists(i) and i[104:106] == r'Z1'])
+    z2Scatter = ([pd.read_csv(i, skiprows=1)
+                  for i in paths if os.path.lexists(i) and i[104:106] == r'Z2'])
     frScatter = pd.concat([frScatter[0], frScatter[1]], axis=1)
-    frScatter.columns = ["m/z", "Counts", "Drift Time", "Intensity"]
-    return frScatter
-# 2Ddata = importSAMM2D()
+    frScatter.columns = ['m/z', 'Counts', 'Drift Time', 'Intensity']
+    return frScatter, userInput
 
-def importSAMM3D(kwargs = None):
-        ## Load Apex3D CSV files for given experiment
-    # print("Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): ") #TEST
-    # userInputApex = input("Example: 57-24-RA2") #TEST
-    userInputApex = r"57-24-RA2" # TEST del
-    apexPath = r"D:\\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\SAMM3D Extracts\APEX Output(3-57)" # TEST
-    apexMS = str(apexPath + r"\Full Range\MS\EJ3-" + userInputApex + r"-Sampling-2\MZ_EJ3-" + r"-Sampling-2_Apex3DIons.csv")
-    apexMS = str("D:\\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\SAMM3D Extracts\APEX Output(3-57)\EJ3-" + userInputApex + "-Sampling-2_Apex3DIons.csv")
+def importSAMM3D(kwargs=None):
+    # Load Apex3D CSV files for given experiment
+    # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): ') #TEST
+    # userInputApex = input('Example: 57-24-RA2') #TEST
+    userInputApex = r'57-158-BC4'  # TEST del
+    # TEST
+    apexPath = r'D:\\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\SAMM3D Extracts\APEX Output(3-57)'
+    apexMS = str(apexPath + r'\Full Range\MS\EJ3-' + userInputApex +
+                 r'-Sampling-2\MZ_EJ3-' + r'-Sampling-2_Apex3DIons.csv')
+    apexMS = str('D:\\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\SAMM3D Extracts\APEX Output(3-57)\EJ3-' +
+                 userInputApex + '-Sampling-2_Apex3DIons.csv')
     apexDF = pd.read_csv(apexMS)
     x, y, z, = (
-        list(apexDF["m_z"]),
-        list(apexDF["mobility"] * 0.16),
-        list(apexDF["area"]),
+        list(apexDF['m_z']),
+        list(apexDF['mobility'] * 0.16),
+        list(apexDF['area']),
     )
     xError, yError, zError = (
-        list(apexDF["errMzPPM"]),
-        list(apexDF["errMobility"]),
-        list(apexDF["errArea"]),
+        list(apexDF['errMzPPM']),
+        list(apexDF['errMobility']),
+        list(apexDF['errArea']),
     )
     newApexDF = pd.DataFrame(
         zip(x, y, z, xError, yError, zError),
-        columns=["m/z", "DT", "Area", "m/z Error", "DT Error", "Area Error"])
+        columns=['m/z', 'DT', 'Area', 'm/z Error', 'DT Error', 'Area Error'])
     return newApexDF
 
-# Data Selection
-specData = importSAMM2D()
+# Create Dataframes
+specData, fileID = importSAMM2D()
 data = importSAMM3D()
 
-    # Quick Variables
-mz = data["m/z"]
-dt = data["DT"]
-area = data["Area"]
-ppmError = data["m/z Error"]
-dtError = data["DT Error"]
-countsError = data["Area Error"]
-print("Plotting figures...")
+# Data Processing
+# 3D
+dims = data[(data['m/z'] > 150) & (data['m/z'] < 1500) &
+            (data['DT'] > 1) & (data['DT'] < 10) 
+            # & (data['Area'] > 1)
+            ]
+mz, dt, area, = (dims['m/z'], dims['DT'], dims['Area'])
+ppmError, dtError, countsError = (
+    dims['m/z Error'], dims['DT Error'], dims['Area Error'])
+# 2D
+msMass, msCounts, dtTime, dtIntensity = (specData['m/z'], specData['Counts'], 
+specData['Drift Time'], specData['Intensity'])
+# Scales
+dims[r'log(Area)'] = dims['Area'].apply(lambda x: np.log(x))
+# Sort
+dims.sort_values('log(Area)', inplace=True)
+dims[r'Normalized log(Area)'] = (dims['log(Area)']-dims['log(Area)'].min()
+                                 )/(dims['log(Area)'].max()-dims['log(Area)'].min())
 
-data.head()
-trimData = data.drop(columns = ['m/z Error', 'DT Error', 'Area Error'])
-# sns.pairplot(trimData)
+import matplotlib as mpl
+from cycler import cycler
+from matplotlib import pyplot as plt
 
-### PLOTTING
-    # Plot Regression Marginals
-# sns.set(style="ticks")
-# jointPlot = sns.jointplot(x = mz, y= dt,
-#                 data=data,
-#                 kind="kde",
-#                 kind="reg",
-#                 kind="resid",
-#                 kind="scatter",
-#                 kind="hex",
-#                 # truncate=False,
-#                 #   xlim=xScale,
-#                 #   ylim=yScale,
-#                 color="k",
-#                 #   height=7
-#                 )
+#   Default MPL Settings
+colors = cycler('color', mSun)
+plt.rc('axes', facecolor='k', edgecolor='gray',
+    axisbelow=False, grid=False, prop_cycle=colors)
+plt.rc('grid', color='w', linestyle='solid', c='0.5', ls='-', lw=0.1)
+plt.rc('xtick', direction='out', color='gray')
+plt.rc('ytick', direction='out', color='gray')
+plt.rc('patch', edgecolor='#003f5c')
+plt.rc('lines', linewidth=0.1, aa=True)
 
-    #MPL Style
-# import matplotlib.pyplot as plt
-# fig, ax = plt.subplots(2, 1, sharey=True)
+# Mass Spectrum
+figure1 = plt.figure(figsize=(6, 3), dpi=100)
+msLayer1 = figure1.add_axes([0.1, 0.1, 0.8, 0.8])
+# inset = figure1.add_axes([0.55, 0.65, 0.3, 0.2]) # Inset
+# inset.set_title('Mobilogram')
+# inset.plot(dtTime, dtIntensity)
+msLayer1.set_title('Mass Spectrum', color='gray')
+msLayer1.plot(msMass, msCounts)
+dtLayer1.fill_between(msMass, 0, msCounts, facecolor=str(mSun[0]), alpha=0.1)
+msLayer1.set_xlabel('$\it{m/z}$', color='gray')
+msLayer1.set_ylabel('Intensity', color='gray')
+plt.xlim(150, 600)
+plt.ylim(0)
+plt.tight_layout()
+plt.savefig("Figure2ms.png", dpi=600)
 
-# Standard plot: 
-# ax.set_title("Drift Time of Mo Ions")
-# ax.set_xlabel('Drift Time (ms)')
-# ax.set_ylabel('Intensity')
-    # dt data
-# ax[0].plot(specData["Drift Time"].index, 
-#         specData["Intensity"],
-#         # marker='v',
-#         linestyle = '--',
-#         color = mSun[1]
-#         )
-# ax[0].set_title("Drift Time of Mo Ions")
-# ax[0].set_xlabel('Drift Time (ms)')
-# ax[0].set_ylabel('Intensity')
-#     # ms data
-# ax[1].plot(specData["m/z"], 
-#         specData["Counts"],
-#         color = mSun[4]
-#         )
-# ax[1].set_title("Mass Spectrum Mo Ions")
-# ax[1].set_xlabel('m/z')
-# ax[1].set_ylabel('Counts')
+# Mobilogram
+figure2 = plt.figure(figsize=(6, 3), dpi=100)
+dtLayer1 = figure2.add_axes([0.1, 0.1, 0.8, 0.8])
+dtLayer1.set_title('Mobilogram', color='gray')
+dtLayer1.plot(dtTime, dtIntensity, color=str(mSun[2]), lw=1)
+dtLayer1.fill_between(dtTime, 0, dtIntensity, facecolor=str(mSun[2]), alpha=0.2)
+dtLayer1.set_xlabel('Drift Time (ms)', color='gray')
+dtLayer1.set_ylabel('Intensity', color='gray')
+plt.xlim(1, 12)
+plt.ylim(0)
+plt.tight_layout()
+plt.savefig("Figure2dt.png", dpi=600)
+
+# 3D Plot
+dtmsMap = plt.figure(figsize=(8, 6), dpi=100, facecolor='k', edgecolor='k')
+dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8])
+dtmsLayer1.set_title('DTMS Map', color='gray')
+dtmsLayer1.hexbin(mz, dt, 
+                    C=area,
+                    bins=(np.arange(len(dt))*0.2),
+                    gridsize=(250, 500),
+                    # bins='log'
+                    # xscale='log',
+                    # yscale='log'
+                    # alpha=0.8,
+                    # edgecolor=None
+                    cmap='inferno'
+                    )
+plt.xlabel('')
+plt.savefig("Figure2cmap.png", dpi=600)
+
+# fig, axs = plt.subplots(ncols=2, sharey=True, figsize=(7, 4))
+# fig.subplots_adjust(hspace=0.5, left=0.07, right=0.93)
+# ax = axs[0]
+# hb = ax.hexbin(x, y, gridsize=50, cmap='inferno')
+# ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))
+# ax.set_title("Hexagon binning")
+# cb = fig.colorbar(hb, ax=ax)
+# cb.set_label('counts')
+
+# log colour scale
+# ax = axs[1]
+# hb = ax.hexbin(x, y, gridsize=50, bins='log', cmap='inferno')
+# ax.set(xlim=(xmin, xmax), ylim=(ymin, ymax))
+# ax.set_title("With a log color scale")
+# cb = fig.colorbar(hb, ax=ax)
+# cb.set_label('log10(N)')
+
+
+# fig.legend()
+
 # plt.show()
-
-# fig2, ax2 = plt.supplots()
-# ax2.plot(specData["m/z"], 
-#         specData["Counts"],
-#         color = mSun[4]
-#         )
-
-# fig, ax = plt.subplots(figsize = (6, 6))
-# sns.scatterplot(x= 'm/z', 
-#             y = 'DT', 
-#             data = data,
-#             # hue = 'Area',
-#             # size = 'Area Error',
-#             # palette = {},
-#             # xlim=(150, 1500),
-#             # ylim=(1,10),
-#             )
-# plt.xlim(150, 1500)
-# plt.ylim(2, 10)
-
-# sns.distplot(data['DT'], kde=True, bins=300)
-# sns.jointplot(x='m/z', y='DT', data=data, kind='reg')
-# plt.xlim(150, 1500)
-# plt.ylim(2, 10)

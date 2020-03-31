@@ -84,15 +84,13 @@ ppmError, dtError, countsError = (dims['m/z Error'], dims['DT Error'], dims['Are
 
 # Scales
 # dims[r'log(Area)'] = dims['Area'].apply(lambda x:np.log(x))
-# dims[r'log(Area)'] = dims['Area'].apply(lambda x:np.log(x))
 
 # Sort
-# dims = dims.sort_values('Area')
-# areaSort = dims.sort_values(by = r'log(Area)')
-
+# dims = dims.sort_values('Area', inplace=True)
+# areaSort = dims.sort_values(by = r'log(Area)', inplace=True)
 mzSort = dims.sort_values(by = r'm/z', inplace=True)
 
-#normalize
+# Normalize
 # df.apply(lambda x: pd.value_counts(x, normalize=True))
 
 import plotly.graph_objects as go
@@ -100,9 +98,9 @@ fig = go.Figure(go.Histogram2dContour(
         x = mz,
         y = dt,
         ))
-# fig.show()
+fig.show()
 
 # go.Histogram?
 
-# Figure export
+# Figure export (optional)
 # fig.write_html('first_figure.html', auto_open=True)
