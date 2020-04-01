@@ -1,9 +1,12 @@
-# Figure2.py
+# Figure4.py
+# Plot results of polyoxomolybdate formation under screened reaction conditions
 # Python 3.7.4
 # Eric Janusson
-# 150320
+# 310320
 # Example styles: https://seaborn.pydata.org/examples/regression_marginals.html
-# https://altair-viz.github.io/gallery/scatter_marginal_hist.html
+
+data: D:\2-SAMM\SAMM - Data Workup Folder\POMSolv Data Workup (300919)
+
 
 import os
 import pandas as pd
@@ -87,6 +90,18 @@ def importSAMM3D(kwargs=None):
         columns=['m/z', 'DT', 'Area', 'm/z Error', 'DT Error', 'Area Error'])
     return newApexDF
 
+
+
+
+
+
+
+
+
+
+
+
+
 # Create Dataframes
 specData, fileID = importSAMM2D()
 data = importSAMM3D()
@@ -125,36 +140,8 @@ plt.rc('grid', c='0.5', ls='-', lw=0.1)
 plt.rc('xtick', direction='out', color='gray')
 plt.rc('ytick', direction='out', color='gray')
 plt.rc('patch', edgecolor='#003f5c')
-plt.rc('lines', linewidth=0.1, aa=True)
 
-# Mass Spectrum
-figure1 = plt.figure(figsize=(6, 3), dpi=600)
-msLayer1 = figure1.add_axes([0.1, 0.1, 0.8, 0.8])
-# inset = figure1.add_axes([0.55, 0.65, 0.3, 0.2]) # Inset
-# inset.set_title('Mobilogram')
-# inset.plot(dtTime, dtIntensity)
-msLayer1.set_title('Mass Spectrum', color='gray')
-msLayer1.plot(msMass, msCounts)
-msLayer1.fill_between(msMass, 0, msCounts, facecolor=str(mSun[0]), alpha=0.1)
-msLayer1.set_xlabel('$\it{m/z}$', color='gray')
-msLayer1.set_ylabel('Intensity', color='gray')
-plt.xlim(msRange)
-plt.ylim(0)
-plt.tight_layout()
-plt.savefig("Figure2ms.png", dpi=600)
-
-# Mobilogram
-figure2 = plt.figure(figsize=(6, 3), dpi=600)
-dtLayer1 = figure2.add_axes([0.1, 0.1, 0.8, 0.8])
-dtLayer1.set_title('Mobilogram', color='gray')
-dtLayer1.plot(dtTime, dtIntensity, color=str(mSun[2]), lw=1)
-dtLayer1.fill_between(dtTime, 0, dtIntensity, facecolor=str(mSun[2]), alpha=0.2)
-dtLayer1.set_xlabel('Drift Time (ms)', color='gray')
-dtLayer1.set_ylabel('Intensity', color='gray')
-plt.xlim(dtRange)
-plt.ylim(0)
-plt.tight_layout()
-plt.savefig("Figure2dt.png", dpi=600)
+# Blank
 
 # 3D Plot
 dtmsMap = plt.figure(figsize=(6, 6), dpi=600, facecolor='k', edgecolor='k')
@@ -175,5 +162,4 @@ dtmsLayer1.set_xlabel('$\it{m/z}$', color='gray')
 dtmsLayer1.set_ylabel('Drift Time (ms)', color='gray')
 dtmsLayer1.set(xlim=(msRange), ylim=(dtRange))
 plt.tight_layout()
-dtmsMap.savefig("Figure2cmap.png", dpi=600)
-
+dtmsMap.savefig("Figure1cmap.png", dpi=600)
