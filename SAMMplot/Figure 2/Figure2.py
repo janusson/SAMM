@@ -177,3 +177,10 @@ dtmsLayer1.set(xlim=(msRange), ylim=(dtRange))
 plt.tight_layout()
 dtmsMap.savefig("Figure2cmap.png", dpi=600)
 
+#   Datashader 3D map
+import datashader as ds, datashader.transfer_functions as tf
+import matplotlib
+
+cvs = ds.Canvas(plot_width=600, plot_height=600)
+agg = cvs.points(data, 'm/z', 'DT', ds.mean('Area'))
+img = tf.shade(agg, cmap=matplotlib.cm.get_cmap('viridis'), how = 'log')
