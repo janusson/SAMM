@@ -1,9 +1,7 @@
-# Figure2.py
+# Figure1.py
 # Python 3.7.4
 # Eric Janusson
 # 150320
-# Example styles: https://seaborn.pydata.org/examples/regression_marginals.html
-# https://altair-viz.github.io/gallery/scatter_marginal_hist.html
 
 import os
 import pandas as pd
@@ -15,7 +13,7 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn import metrics
-%matplotlib inline
+# %matplotlib inline
 
 # Custom colour schemes:
 def setColourScheme():
@@ -100,129 +98,99 @@ specData, fileID = importSAMM2D()
 data = importSAMM3D()
 
 ## Data Processing
-# 3D
-# dims = data[(data['m/z'] > 150) & (data['m/z'] < 1500) &
-#             (data['DT'] > 0) & (data['DT'] < 200) 
-#             # & (data['Area'] > 1)
-#             ]
-# mz, dt, area, = (dims['m/z'], dims['DT'], dims['Area'])
-# ppmError, dtError, countsError = (
-#     dims['m/z Error'], dims['DT Error'], dims['Area Error'])
-# # 2D
-# msMass, msCounts, dtTime, dtIntensity = (specData['m/z'], specData['Counts'], 
-# specData['Drift Time'], specData['Intensity'])
-# # Scales
-# dims[r'log(Area)'] = dims['Area'].apply(lambda x: np.log(x))
-# # Sort
-# dims.sort_values('log(Area)', inplace=True)
-# dims[r'Normalized log(Area)'] = (dims['log(Area)']-dims['log(Area)'].min()
-#                                  )/(dims['log(Area)'].max()-dims['log(Area)'].min())
+def processData():
+    # 3D
+    dims = data[(data['m/z'] > 150) & (data['m/z'] < 3000) &
+                (data['DT'] > 0) & (data['DT'] < 200) 
+                # & (data['Area'] > 1)
+                ]
+    mz, dt, area, = (dims['m/z'], dims['DT'], dims['Area'])
+    ppmError, dtError, countsError = (
+        dims['m/z Error'], dims['DT Error'], dims['Area Error'])
+    # 2D
+    msMass, msCounts, dtTime, dtIntensity = (specData['m/z'], specData['Counts'], 
+    specData['Drift Time'], specData['Intensity'])
+    # Scales
+    dims[r'log(Area)'] = dims['Area'].apply(lambda x: np.log(x))
+    # Sort
+    dims.sort_values('log(Area)', inplace=True)
+    dims[r'Normalized log(Area)'] = (dims['log(Area)']-dims['log(Area)'].min()
+                                    )/(dims['log(Area)'].max()-dims['log(Area)'].min())
+processData()
 
+## Plotting
+msRange = (150, 1500)
+dtRange = (2, 12)
 
-# Plotting
-# msRange = [150, 1500]
-# dtRange = [1, 12]
+def mplDTMS():
+    #   Default MPL Settings
+    colors = cycler('color', mSun)
+    # plt.rc('figure', edgecolor='k')
+    plt.rc('axes', edgecolor='gray', axisbelow=False, grid=False, prop_cycle=colors)
+    plt.rc('grid', c='0.5', ls='-', lw=0.1)
+    plt.rc('xtick', direction='out', color='gray')
+    plt.rc('ytick', direction='out', color='gray')
+    plt.rc('patch', edgecolor='#003f5c')
 
-#   Default MPL Settings
-# colors = cycler('color', mSun)
-# # plt.rc('figure', edgecolor='k')
-# plt.rc('axes', edgecolor='gray', axisbelow=False, grid=False, prop_cycle=colors)
-# plt.rc('grid', c='0.5', ls='-', lw=0.1)
-# plt.rc('xtick', direction='out', color='gray')
-# plt.rc('ytick', direction='out', color='gray')
-# plt.rc('patch', edgecolor='#003f5c')
+    # MPL HEXBIN Plot
+    dtmsMap = plt.figure(figsize=(6, 6), dpi=600, facecolor='k', edgecolor='k')
+    dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
+    dtmsLayer1.set_title('DTMS Map', color='gray')
+    dtmsLayer1.hexbin(mz, dt, 
+                        C=area,
+                        bins=(np.arange(len(dt))*0.2),  # Change to log for quantitative view
+                        # bins='log'
+                        gridsize=(250, 500),
+                        # xscale='log',
+                        # yscale='log'
+                        # alpha=0.8,
+                        # edgecolor=None
+                        cmap='inferno' #'viridis' 'inferno'
+                        )
+    dtmsLayer1.set_xlabel('$\it{m/z}$', color='gray')
+    dtmsLayer1.set_ylabel('Drift Time (ms)', color='gray')
+    dtmsLayer1.set(xlim=msRange, ylim=dtRange)
+    plt.tight_layout()
+    dtmsMap.savefig("Figure1-cmap.png", dpi=600)
+# mplDTMS()
 
-# Blank
-
-# 3D Plot
-# dtmsMap = plt.figure(figsize=(6, 6), dpi=600, facecolor='k', edgecolor='k')
-# dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
-# dtmsLayer1.set_title('DTMS Map', color='gray')
-# dtmsLayer1.hexbin(mz, dt, 
-#                     C=area,
-#                     bins=(np.arange(len(dt))*0.2),  # Change to log for quantitative view
-#                     # bins='log'
-#                     gridsize=(250, 500),
-#                     # xscale='log',
-#                     # yscale='log'
-#                     # alpha=0.8,
-#                     # edgecolor=None
-#                     cmap='inferno' #'viridis' 'inferno'
-#                     )
-# dtmsLayer1.set_xlabel('$\it{m/z}$', color='gray')
-# dtmsLayer1.set_ylabel('Drift Time (ms)', color='gray')
-# dtmsLayer1.set(xlim=(msRange), ylim=(dtRange))
-# plt.tight_layout()
-# dtmsMap.savefig("Figure1cmap.png", dpi=600)
-
-
-
-## Some data science methods
-# https://towardsdatascience.com/a-beginners-guide-to-linear-regression-in-python-with-scikit-learn-83a8f7ae2b4f
-
-
-
-sklearnData = data.drop(columns=['m/z Error', 'DT Error', 'Area Error']).sort_values(by='Area').reset_index()
-
-sns.distplot(sklearnData['Area'])
-sklearnData.describe()
-
-x = sklearnData['m/z'].values.reshape(-1, 1)
-y = sklearnData['DT'].values.reshape(-1, 1)
-xTrain, xTest, yTrain, yTest = trainTestSplit(x, y, testSize=0.2, randomState=0)
-
-
-
-
-## Datashader
+# Datashader
 
 #   Datashader 3D map
-# import datashader as ds, datashader.transfer_functions as tf
-
-# cvs = ds.Canvas(plot_width=600, plot_height=600)
-# agg = cvs.points(data, 'm/z', 'DT', ds.mean('Area'))
-# img = tf.shade(agg, cmap=matplotlib.cm.get_cmap('viridis'), how = 'log')
-
-
-
-    ### Nytaxi hover
-# import numpy as np
-# import holoviews as hv
-# import dask.dataframe as dd
-
+import datashader as ds, datashader.transfer_functions as tf
+import holoviews as hv
 # from holoviews import opts
-# from holoviews.operation.datashader import aggregate
+from colorcet import bmw, bkr, bgyw, bkr, bgy, kbc, bmw, bmy, kb, bkr, CET_CBL2
+# from colorcet import bmw, isolum, 
+from matplotlib.cm import viridis, plasma, magma, inferno, cividis
+from functools import partial
+from datashader.utils import export_image
+from IPython.core.display import HTML, display
 
-# renderer = hv.renderer('bokeh')
+# Create Canvas
+cvs = ds.Canvas(plot_width=1920//2, plot_height=1080//2, 
+                x_range=msRange, y_range=dtRange, 
+                # x_axis_type='linear', y_axis_type='linear'
+                )
+# Aggregate data
+data.head()
+agg = cvs.points(data, 'm/z', 'DT', ds.mean('Area'))
 
-# # Set plot and style options
-# opts.defaults(
-#     opts.Curve(xaxis=None, yaxis=None, show_grid=False, show_frame=False,
-#                color='orangered', framewise=True, width=100),
-#     opts.Image(width=800, height=400, shared_axes=False, logz=True,
-#                xaxis=None, yaxis=None, axiswise=True),
-#     opts.HLine(color='white', line_width=1),
-#     opts.Layout(shared_axes=False),
-#     opts.VLine(color='white', line_width=1))
+img = tf.shade(
+    agg,
+    cmap=magma,
+    # cmap=bgyw, bmy,CET_CBL2,
+    # color_key=None,
+    how='eq_hist', # cbrt, log, linear, eq_hist
+    # alpha=255,
+    # min_alpha=100,
+    name='CET DTMS Map',
+)
 
-# # Read the parquet file
-# df = dd.read_parquet('./data/nyc_taxi_wide.parq').persist()
+export = partial(export_image, background='black', export_path='export')
+# cm = partial(cMap, reverse=(bgColor!='White'))
+display(HTML('<style>.container { width:100% !important; }</style>'))
+export(img, 'Figure1-ds')
 
-# # Declare points
-# points = hv.Points(df, kdims=['pickup_x', 'pickup_y'], vdims=[])
-
-# # Use datashader to rasterize and linked streams for interactivity
-# agg = aggregate(points, link_inputs=True, x_sampling=0.0001, y_sampling=0.0001)
-# pointerx = hv.streams.PointerX(x=np.mean(points.range('pickup_x')), source=points)
-# pointery = hv.streams.PointerY(y=np.mean(points.range('pickup_y')), source=points)
-# vline = hv.DynamicMap(lambda x: hv.VLine(x), streams=[pointerx])
-# hline = hv.DynamicMap(lambda y: hv.HLine(y), streams=[pointery])
-
-# sampled = hv.util.Dynamic(agg, operation=lambda obj, x: obj.sample(pickup_x=x),
-#                           streams=[pointerx], link_inputs=False)
-
-# hvobj = ((agg * hline * vline) << sampled)
-
-# # Obtain Bokeh document and set the title
-# doc = renderer.server_doc(hvobj)
-# doc.title = 'NYC Taxi Crosshair'
+img = tf.Images(tf.set_background(img, 'black')) 
+img

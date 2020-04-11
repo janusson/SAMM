@@ -141,7 +141,6 @@ print('Figure file exported  as Figure4.png')
 ## Annotation and descriptive stats:
 # https://www.statsmodels.org/stable/index.html
 
-
 ## Supporting Info
 # df = solventPlot[['FRMS', 'FRDT', 'Solvent']]
 # df.sort_values(by='Solvent', ascending=True, kind='quicksort', inplace=True)
@@ -163,4 +162,3 @@ print('Figure file exported  as Figure4.png')
 #     # ylim=(int(solventPlot['Z2DT-LWI'].min())*-1, int(solventPlot['Z2DT-LWI'].max())*1.1)
 # )
 # plt.show()
-
