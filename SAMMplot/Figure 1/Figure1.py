@@ -104,9 +104,7 @@ def processData():
                 (data['DT'] > 0) & (data['DT'] < 200) 
                 # & (data['Area'] > 1)
                 ]
-    mz, dt, area, = (dims['m/z'], dims['DT'], dims['Area'])
-    ppmError, dtError, countsError = (
-        dims['m/z Error'], dims['DT Error'], dims['Area Error'])
+
     # 2D
     msMass, msCounts, dtTime, dtIntensity = (specData['m/z'], specData['Counts'], 
     specData['Drift Time'], specData['Intensity'])
@@ -116,8 +114,11 @@ def processData():
     dims.sort_values('log(Area)', inplace=True)
     dims[r'Normalized log(Area)'] = (dims['log(Area)']-dims['log(Area)'].min()
                                     )/(dims['log(Area)'].max()-dims['log(Area)'].min())
-processData()
-
+    return dims
+dims = processData()
+mz, dt, area, = (dims['m/z'], dims['DT'], dims['Area'])
+ppmError, dtError, countsError = (
+    dims['m/z Error'], dims['DT Error'], dims['Area Error'])
 ## Plotting
 msRange = (150, 1500)
 dtRange = (2, 12)
@@ -152,11 +153,9 @@ def mplDTMS():
     dtmsLayer1.set(xlim=msRange, ylim=dtRange)
     plt.tight_layout()
     dtmsMap.savefig("Figure1-cmap.png", dpi=600)
-# mplDTMS()
+mplDTMS()
 
-# Datashader
-
-#   Datashader 3D map
+# Datashader 3D map
 import datashader as ds, datashader.transfer_functions as tf
 import holoviews as hv
 # from holoviews import opts
@@ -184,13 +183,11 @@ img = tf.shade(
     how='eq_hist', # cbrt, log, linear, eq_hist
     # alpha=255,
     # min_alpha=100,
-    name='CET DTMS Map',
+    name='DTMS Map',
 )
 
 export = partial(export_image, background='black', export_path='export')
 # cm = partial(cMap, reverse=(bgColor!='White'))
 display(HTML('<style>.container { width:100% !important; }</style>'))
 export(img, 'Figure1-ds')
-
 img = tf.Images(tf.set_background(img, 'black')) 
-img

@@ -27,8 +27,7 @@ mSun, malDiv, malPal, bojackGrad = setColourScheme()
 # userInput = input('Input path of CSV File: ')
 # data = pd.read_csv(userInput)
 data = pd.read_csv(
-    r'D:\Programming\SAMM\SAMMplot\Figure 4\EJ3-57-SAMM2trends.csv', delimiter=',', header='infer'
-)
+    r'D:\Programming\SAMM\SAMMplot\Figure 4\EJ3-57-SAMM2trends.csv', delimiter=',', header='infer')
 data.reset_index()
 data.set_index("ID")
 
@@ -135,7 +134,7 @@ figure4 = sns.pairplot(
 plt.tight_layout()
 # plt.plot()
 figure4.savefig('Figure4-a.png') # Save figure
-print('Figure file exported  as Figure4.png')
+print('Figure file exported as Figure4.png')
 
 
 ## Annotation and descriptive stats:

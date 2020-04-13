@@ -25,17 +25,11 @@ def setColourScheme():
 mSun, malDiv, malPal, bojackGrad = setColourScheme()
 # Data import functions (From TWIMExtract and APEX3D Output) customized to user input (default: ID: 57-24-RA2)
 
-def importSAMM2D(kwargs=None):
+def importSAMM2D(userInput=None):
     # Load 2D CSV files for FR, Z1, Z2
-
-    # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): ') #TEST
-
-    # userInput = input('Example: 57-24-RA2') #TEST
-
-    # headers = ['Nuclearity', 'm/z', r'DT (bins)']
-    # df = pd.read_csv(r'D:\2-SAMM\SAMM - Data Workup Folder\EJ3-60-SAMM3-MoMonitoring\EJ3-60 - SAMM Monitor\EJ3-60-HitList-Z2.csv', names = headers)
-
-    userInput = r'57-158-BC4'  # TEST
+    # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): \n')
+    # userInput = input('Example: 57-158-BC4')
+    # userInput = '57-158-BC4'
     basePath = r'D:\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\Experimental Data\3-57-SAMM2\2DExtract(3-57-2)'
     frMS = str(basePath + r'\Full Range\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
                userInput + r'-Sampling-2_fn-1_#FullRange-POMSolv-Rangefile.txt_raw.csv')
@@ -52,13 +46,19 @@ def importSAMM2D(kwargs=None):
     paths = [frMS, frDT, z1MS, z1DT, z2MS, z2DT]
     frScatter = ([pd.read_csv(i, skiprows=1)
                   for i in paths if os.path.lexists(i) and i[104:106] == r'Fu'])
-    z1Scatter = ([pd.read_csv(i, skiprows=1)
-                  for i in paths if os.path.lexists(i) and i[104:106] == r'Z1'])
-    z2Scatter = ([pd.read_csv(i, skiprows=1)
-                  for i in paths if os.path.lexists(i) and i[104:106] == r'Z2'])
     frScatter = pd.concat([frScatter[0], frScatter[1]], axis=1)
     frScatter.columns = ['m/z', 'Counts', 'Drift Time', 'Intensity']
-    return frScatter, userInput
+    
+    z1Scatter = ([pd.read_csv(i, skiprows=1)
+                  for i in paths if os.path.lexists(i) and i[104:106] == r'Z1'])
+    z1Scatter = pd.concat([z1Scatter[0], z1Scatter[1]], axis=1)
+    z1Scatter.columns = ['m/z', 'Counts', 'Drift Time', 'Intensity']
+    
+    z2Scatter = ([pd.read_csv(i, skiprows=1)
+                  for i in paths if os.path.lexists(i) and i[104:106] == r'Z2'])
+    z2Scatter = pd.concat([z2Scatter[0], z2Scatter[1]], axis=1)
+    z2Scatter.columns = ['m/z', 'Counts', 'Drift Time', 'Intensity']
+    return frScatter, z1Scatter, z2Scatter, userInput
 
 def importSAMM3D(kwargs=None):
     # Load Apex3D CSV files for given experiment
@@ -88,7 +88,7 @@ def importSAMM3D(kwargs=None):
     return newApexDF
 
 # Create Dataframes
-specData, fileID = importSAMM2D()
+specData, z1spec, z2spec, fileID = importSAMM2D('57-158-BC4')
 data = importSAMM3D()
 
 # Data Processing
@@ -119,42 +119,89 @@ dtRange = [1, 12]
 
 #   Default MPL Settings
 colors = cycler('color', mSun)
-# plt.rc('figure', edgecolor='k')
-plt.rc('axes', edgecolor='gray', axisbelow=False, grid=False, prop_cycle=colors)
+from matplotlib import rcParams
+plt.rc('axes', edgecolor='gray', axisbelow=False, grid=False)
+# plt.rc('axes', edgecolor='gray', axisbelow=False, grid=False, prop_cycle=colors)
 plt.rc('grid', c='0.5', ls='-', lw=0.1)
 plt.rc('xtick', direction='out', color='gray')
 plt.rc('ytick', direction='out', color='gray')
 plt.rc('patch', edgecolor='#003f5c')
-plt.rc('lines', linewidth=0.1, aa=True)
+plt.rc('lines', linewidth=0.18, aa=True)
+font = {'family' : 'arial',
+        'weight' : 'bold',
+        'size'   : 16}
+plt.rc('font', **font)  # pass in the font dict as kwargs
 
-# Mass Spectrum
-figure1 = plt.figure(figsize=(6, 3), dpi=600)
-msLayer1 = figure1.add_axes([0.1, 0.1, 0.8, 0.8])
-# inset = figure1.add_axes([0.55, 0.65, 0.3, 0.2]) # Inset
-# inset.set_title('Mobilogram')
-# inset.plot(dtTime, dtIntensity)
-msLayer1.set_title('Mass Spectrum', color='gray')
-msLayer1.plot(msMass, msCounts)
-msLayer1.fill_between(msMass, 0, msCounts, facecolor=str(mSun[0]), alpha=0.1)
-msLayer1.set_xlabel('$\it{m/z}$', color='gray')
-msLayer1.set_ylabel('Intensity', color='gray')
-plt.xlim(msRange)
-plt.ylim(0)
-plt.tight_layout()
-plt.savefig("Figure2ms.png", dpi=600)
+###
 
-# Mobilogram
-figure2 = plt.figure(figsize=(6, 3), dpi=600)
-dtLayer1 = figure2.add_axes([0.1, 0.1, 0.8, 0.8])
-dtLayer1.set_title('Mobilogram', color='gray')
-dtLayer1.plot(dtTime, dtIntensity, color=str(mSun[2]), lw=1)
-dtLayer1.fill_between(dtTime, 0, dtIntensity, facecolor=str(mSun[2]), alpha=0.2)
-dtLayer1.set_xlabel('Drift Time (ms)', color='gray')
-dtLayer1.set_ylabel('Intensity', color='gray')
-plt.xlim(dtRange)
-plt.ylim(0)
-plt.tight_layout()
-plt.savefig("Figure2dt.png", dpi=600)
+# def scatter_hist(x, y, ax, ax_histx, ax_histy):
+#     # no labels
+#     ax_histx.tick_params(axis="x", labelbottom=False)
+#     ax_histy.tick_params(axis="y", labelleft=False)
+
+#     # the scatter plot:
+#     ax.scatter(x, y)
+
+#     # now determine nice limits by hand:
+#     binwidth = 0.25
+#     xymax = max(np.max(np.abs(x)), np.max(np.abs(y)))
+#     lim = (int(xymax/binwidth) + 1) * binwidth
+
+#     bins = np.arange(-lim, lim + binwidth, binwidth)
+#     ax_histx.hist(x, bins=bins)
+#     ax_histy.hist(y, bins=bins, orientation='horizontal')
+
+# # definitions for the axes
+# left, width = 0.1, 0.65
+# bottom, height = 0.1, 0.65
+# spacing = 0.005
+
+# rect_scatter = [left, bottom, width, height]
+# rect_histx = [left, bottom + height + spacing, width, 0.2]
+# rect_histy = [left + width + spacing, bottom, 0.2, height]
+
+# # start with a square Figure
+# fig = plt.figure(figsize=(8, 8))
+
+# ax = fig.add_axes(rect_scatter)
+# ax_histx = fig.add_axes(rect_histx, sharex=ax)
+# ax_histy = fig.add_axes(rect_histy, sharey=ax)
+
+# # use the previously defined function
+# scatter_hist(mz, dt, ax, ax_histx, ax_histy)
+
+# plt.show()
+
+###
+
+# # Mass Spectrum
+# figure1 = plt.figure(figsize=(6, 3), dpi=600)
+# msLayer1 = figure1.add_axes([0.1, 0.1, 0.8, 0.8])
+# # inset = figure1.add_axes([0.55, 0.65, 0.3, 0.2]) # Inset
+# # inset.set_title('Mobilogram')
+# # inset.plot(dtTime, dtIntensity)
+# msLayer1.set_title('Mass Spectrum', color='gray')
+# msLayer1.plot(msMass, msCounts)
+# msLayer1.fill_between(msMass, 0, msCounts, facecolor=str(mSun[0]), alpha=0.1)
+# msLayer1.set_xlabel('$\it{m/z}$', color='gray')
+# msLayer1.set_ylabel('Intensity', color='gray')
+# plt.xlim(msRange)
+# plt.ylim(0)
+# plt.tight_layout()
+# plt.savefig("Figure2ms.png", dpi=600)
+
+# # Mobilogram
+# figure2 = plt.figure(figsize=(6, 3), dpi=600)
+# dtLayer1 = figure2.add_axes([0.1, 0.1, 0.8, 0.8])
+# dtLayer1.set_title('Mobilogram', color='gray')
+# dtLayer1.plot(dtTime, dtIntensity, color=str(mSun[2]), lw=1)
+# dtLayer1.fill_between(dtTime, 0, dtIntensity, facecolor=str(mSun[2]), alpha=0.2)
+# dtLayer1.set_xlabel('Drift Time (ms)', color='gray')
+# dtLayer1.set_ylabel('Intensity', color='gray')
+# plt.xlim(dtRange)
+# plt.ylim(0)
+# plt.tight_layout()
+# plt.savefig("Figure2dt.png", dpi=600)
 
 # 3D Plot
 dtmsMap = plt.figure(figsize=(6, 6), dpi=600, facecolor='k', edgecolor='k')
@@ -183,4 +230,4 @@ import matplotlib
 
 cvs = ds.Canvas(plot_width=600, plot_height=600)
 agg = cvs.points(data, 'm/z', 'DT', ds.mean('Area'))
-img = tf.shade(agg, cmap=matplotlib.cm.get_cmap('viridis'), how = 'log')
+img = tf.shade(agg, how = 'log')

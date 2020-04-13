@@ -1,3 +1,22 @@
+
+
+
+
+# MPL Settings
+colors = cycler('color', mSun)
+from matplotlib import rcParams
+plt.rc('axes', edgecolor='gray', axisbelow=False, grid=False, prop_cycle=colors)
+plt.rc('grid', c='0.5', ls='-', lw=0.1)
+plt.rc('xtick', direction='out', color='gray')
+plt.rc('ytick', direction='out', color='gray')
+plt.rc('patch', edgecolor='#003f5c')
+plt.rc('lines', linewidth=0.18, aa=True)
+font = {'family' : 'arial',
+        'weight' : 'bold',
+        'size'   : 16}
+plt.rc('font', **font)  # pass in the font dict as kwargs
+
+
 ## Regression analysis
 # https://towardsdatascience.com/a-beginners-guide-to-linear-regression-in-python-with-scikit-learn-83a8f7ae2b4f
 

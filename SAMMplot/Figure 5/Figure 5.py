@@ -19,13 +19,13 @@ def setColourScheme():
         ' ')
     return(mSun, malDiv, malPal, bojackGrad)
 mSun, malDiv, malPal, bojackGrad = setColourScheme()
-# Data import functions (From TWIMExtract and APEX3D Output) customized to user input (default: ID: 57-24-RA2)
 
-# 57-158-BC4
-def importSAMM2D(kwargs=None):
+# Data import functions (From TWIMExtract and APEX3D Output) customized to user input (default: ID: 57-24-RA2)
+def importSAMM2D(userInput=None):
     # Load 2D CSV files for FR, Z1, Z2
-    print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): \n')
-    userInput = input('Example: 57-158-BC4')
+    # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): \n')
+    # userInput = input('Example: 57-158-BC4')
+    # userInput = '57-158-BC4'
     basePath = r'D:\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\Experimental Data\3-57-SAMM2\2DExtract(3-57-2)'
     frMS = str(basePath + r'\Full Range\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
                userInput + r'-Sampling-2_fn-1_#FullRange-POMSolv-Rangefile.txt_raw.csv')
@@ -57,65 +57,84 @@ def importSAMM2D(kwargs=None):
     return frScatter, z1Scatter, z2Scatter, userInput
 
 # Create Dataframes
-frScatter, z1Scatter, z2Scatter, fileID = importSAMM2D()
+frScatter, z1Scatter, z2Scatter, fileID = importSAMM2D('57-158-BC4')
+frScat2, z1Scat2, z2Scat2, fileID2 = importSAMM2D('57-26-RA4')
+
+# Data processing
+z2Scatter = z2Scatter[
+            (z2Scatter['m/z'] > 300) 
+            & (z2Scatter['m/z'] < 1100)  
+            & (z2Scatter['m/z'] < 1100)]
+
+z2Scat2 = z2Scat2[
+            (z2Scat2['m/z'] > 300) 
+            & (z2Scat2['m/z'] < 1100)  
+            & (z2Scat2['m/z'] < 1100)
+            ]
+
+# Normalize Data
+# from sklearn import preprocessing as pp
+# z2Scatter.drop(columns=['Drift Time', 'Intensity'], inplace=True)
+# z2Scat2.drop(columns=['Drift Time', 'Intensity'], inplace=True)
+# z2Scatter['Normalized Intensity'] = pd.DataFrame(pp.maxabs_scale(z2Scatter['Counts']))
+# z2Scat2['Normalized Intensity'] = pd.DataFrame(pp.maxabs_scale(z2Scat2['Counts']))
+# z2Scatter.drop(columns='Counts', inplace=True)
+# z2Scatter.fillna(0)
 
 ## Plotting
 import matplotlib as mpl
 from cycler import cycler
 from matplotlib import pyplot as plt
 
-msRange = [150, 1500]
-dtRange = [1, 12]
+msRange = (300, 1100)
 
 #   Default MPL Settings
 colors = cycler('color', mSun)
 
-# plt.rc('figure', edgecolor='k')
+from matplotlib import rcParams
 plt.rc('axes', edgecolor='gray', axisbelow=False, grid=False, prop_cycle=colors)
 plt.rc('grid', c='0.5', ls='-', lw=0.1)
 plt.rc('xtick', direction='out', color='gray')
 plt.rc('ytick', direction='out', color='gray')
 plt.rc('patch', edgecolor='#003f5c')
-plt.rc('lines', linewidth=0.1, aa=True)
+plt.rc('lines', linewidth=0.18, aa=True)
+font = {'family' : 'arial',
+        'weight' : 'bold',
+        'size'   : 16}
+plt.rc('font', **font)  # pass in the font dict as kwargs
 
-# Mass Spectra
-def plotMS(scatterData, titleCharge):
-    figure1 = plt.figure(figsize=(6, 3), dpi=600)
-    msLayer1 = figure1.add_axes([0.1, 0.1, 0.8, 0.8])
-    # inset = figure1.add_axes([0.55, 0.65, 0.3, 0.2]) # Inset
-    # inset.set_title('Mobilogram')
-    # inset.plot(dtTime, dtIntensity)
-    charge = str(titleCharge)
-    msLayer1.set_title(charge + ' Mass Spectrum of ' + fileID, color='gray')
-    msLayer1.plot(scatterData['m/z'], scatterData['Counts'])
-    msLayer1.fill_between(scatterData['m/z'], 0, scatterData['Counts'], facecolor=str(mSun[0]), alpha=0.1)
-    msLayer1.set_xlabel(r'$\it{m/z}$', color='gray')
-    msLayer1.set_ylabel('Intensity', color='gray')
+def plotMS(scatterData, scatterData2, titleCharge):
+    fig, ax = plt.subplots(nrows=2, ncols=1, sharex=True, sharey=False, figsize=(8,8), dpi=600)
+    charge = titleCharge
+
+    ax[0].plot(scatterData['m/z'], scatterData['Counts'], color=mSun[0])
+    ax[0].fill_between(scatterData['m/z'], 0, scatterData['Counts'], facecolor=mSun[0])
+    ax[0].set_title('Figure 5')
+    ax[0].set_ylabel('Intensity (1e5)', color='gray')
+    ax[0].set_title(charge + ' Mass Spectrum of ' + fileID, color='gray')
+    ax[0].set_ylim(bottom=0)
+
+    ax[1].plot(scatterData2['m/z'], scatterData2['Counts'], color=mSun[3])
+    ax[1].fill_between(scatterData2['m/z'], 0, scatterData2['Counts'], facecolor=mSun[3])
+    ax[1].set_title(charge + ' Mass Spectrum of ' + fileID2, color='gray')
+    ax[1].set_xlabel('$\it{m/z}$', color='gray')
+    ax[1].set_ylabel('Intensity (1e5)', color='gray')
+    ax[1].invert_yaxis()
+    ax[1].set_ylim(top=0)
+
     plt.xlim(msRange)
-    plt.ylim(0)
-    plt.tight_layout()    
-    plt.savefig("Figure5-MS-" + charge + "-" + fileID + ".png", dpi=600)
-# plotMS(frScatter, 'FR')
-# plotMS(z1Scatter, 'Z1')
-plotMS(z2Scatter, 'Z2')
 
-# Mobilogram (optional)
-# def plotDT(scatterDatadt, dttitleCharge):
-#     figure2 = plt.figure(figsize=(6, 3), dpi=600)
-#     dtLayer1 = figure2.add_axes([0.1, 0.1, 0.8, 0.8])
-#     # inset = figure1.add_axes([0.55, 0.65, 0.3, 0.2]) # Inset
-#     # inset.set_title('Mobilogram')
-#     # inset.plot(dtTime, dtIntensity)
-#     charge = str(dttitleCharge)
-#     dtLayer1.set_title(charge + ' Mobilogram of ' + fileID, color='gray')
-#     dtLayer1.plot(scatterDatadt['Drift Time'], scatterDatadt['Intensity'], color=mSun[2])
-#     dtLayer1.fill_between(scatterDatadt['Drift Time'], 0, scatterDatadt['Intensity'], facecolor=str(mSun[2]), alpha=0.1)
-#     dtLayer1.set_xlabel(r'Drift Time (ms)', color='gray')
-#     dtLayer1.set_ylabel('Intensity', color='gray')
-#     plt.xlim(dtRange[0], dtRange[1])
-#     plt.ylim(0)
-#     plt.tight_layout()    
-#     plt.savefig("Figure5-DT-" + charge + "-" + fileID + ".png", dpi=600)
-# plotDT(frScatter, 'FR')
-# plotDT(z1Scatter, 'Z1')
-# plotDT(z2Scatter, 'Z2')
+    ax[0].legend([None, str(fileID)])
+    ax[1].legend([None, str(fileID2)])
+
+    ax[0].ticklabel_format(axis='y', style='sci', scilimits=(0, 0))
+    ax[1].ticklabel_format(axis='y', style='sci', scilimits=(0, 0))
+    plt.tight_layout()
+
+    # plt.gcf().subplots_adjust(bottom=0.15, right = 0.3)
+    plt.savefig("Figure5.png", dpi=600)
+
+    # plt.savefig("Figure5-MS-" + charge + "-" + fileID + ' and ' + fileId2 + ".png", dpi=600)
+
+
+plotMS(z2Scatter, z2Scat2, 'Z2')
