@@ -6,13 +6,11 @@
 import os
 import pandas as pd
 import numpy as np
-import matplotlib as mpl
 from cycler import cycler
 from matplotlib import pyplot as plt
-import seaborn as sns
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn import metrics
+# from sklearn.model_selection import train_test_split
+# from sklearn.linear_model import LinearRegression
+# from sklearn import metrics
 # %matplotlib inline
 
 # Custom colour schemes:
@@ -24,8 +22,7 @@ def setColourScheme():
     # maliwan palette
     malPal = '#1e394a #414471 #893e78 #c23a53 #cc6200'.split(' ')
     # bojack gradient
-    bojackGrad = '#D04F6D #84486A #9C4670 #A75C87 #8C5D8B #7088B3 #71B2CA #8EE7F0 #B7F9F9 #A6F5F7'.split(
-        ' ')
+    bojackGrad = '#D04F6D #84486A #9C4670 #A75C87 #8C5D8B #7088B3 #71B2CA #8EE7F0 #B7F9F9 #A6F5F7'.split(' ')
     return(mSun, malDiv, malPal, bojackGrad)
 
 mSun, malDiv, malPal, bojackGrad = setColourScheme()
@@ -33,14 +30,10 @@ mSun, malDiv, malPal, bojackGrad = setColourScheme()
 
 def importSAMM2D(kwargs=None):
     # Load 2D CSV files for FR, Z1, Z2
-
     # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): ') #TEST
-
     # userInput = input('Example: 57-24-RA2') #TEST
-
     # headers = ['Nuclearity', 'm/z', r'DT (bins)']
     # df = pd.read_csv(r'D:\2-SAMM\SAMM - Data Workup Folder\EJ3-60-SAMM3-MoMonitoring\EJ3-60 - SAMM Monitor\EJ3-60-HitList-Z2.csv', names = headers)
-
     userInput = r'57-158-BC4'  # TEST
     basePath = r'D:\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\Experimental Data\3-57-SAMM2\2DExtract(3-57-2)'
     frMS = str(basePath + r'\Full Range\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
@@ -104,7 +97,6 @@ def processData():
                 (data['DT'] > 0) & (data['DT'] < 200) 
                 # & (data['Area'] > 1)
                 ]
-
     # 2D
     msMass, msCounts, dtTime, dtIntensity = (specData['m/z'], specData['Counts'], 
     specData['Drift Time'], specData['Intensity'])
@@ -140,9 +132,10 @@ plt.rc('font', **font)  # pass in the font dict as kwargs
 
 def mplDTMS():
     # MPL HEXBIN Plot
-    dtmsMap = plt.figure(figsize=(8, 8), dpi=600, facecolor='k', edgecolor='k')
+    dtmsMap = plt.figure(figsize=(8, 8), dpi=1200, facecolor='k', edgecolor='k')
     dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
     dtmsLayer1.set_title('DTMS Map', color='black')
+
     dtmsLayer1.hexbin(mz, dt, 
                         C=area,
                         bins=(np.arange(len(dt))*0.2),  # Change to log for quantitative view
@@ -154,47 +147,60 @@ def mplDTMS():
                         # edgecolor=None
                         cmap='inferno' #'viridis' 'inferno'
                         )
+    
     dtmsLayer1.set_xlabel('$\it{m/z}$', color='black')
     dtmsLayer1.set_ylabel('Drift Time (ms)', color='black')
     dtmsLayer1.set(xlim=msRange, ylim=dtRange)
     plt.tight_layout()
-    dtmsMap.savefig("Figure1-cmap.png", dpi=600)
-mplDTMS()
+    dtmsMap.savefig("Figure1-cmap.png", dpi=1200)
+    print('MPL Export Complete')
 
-# Datashader 3D map
-import datashader as ds, datashader.transfer_functions as tf
-import holoviews as hv
-# from holoviews import opts
-from colorcet import bmw, bkr, bgyw, bkr, bgy, kbc, bmw, bmy, kb, bkr, CET_CBL2
-# from colorcet import bmw, isolum, 
-from matplotlib.cm import viridis, plasma, magma, inferno, cividis
-from functools import partial
-from datashader.utils import export_image
-from IPython.core.display import HTML, display
+def dsMap():
+    # Datashader 3D map
+    import datashader as ds, datashader.transfer_functions as tf
+    import holoviews as hv
+    # from holoviews import opts
+    from colorcet import bmw, bkr, bgyw, bkr, bgy, kbc, bmw, bmy, kb, bkr, CET_CBL2
+    # from colorcet import bmw, isolum, 
+    from matplotlib.cm import viridis, plasma, magma, inferno, cividis
+    from functools import partial
+    from datashader.utils import export_image
+    from IPython.core.display import HTML, display
+    
+    # Create Canvas
+    cvs = ds.Canvas(plot_width=1920//2, plot_height=1920//2, 
+                    x_range=msRange, y_range=dtRange, 
+                    # x_axis_type='linear', y_axis_type='linear'
+                    )
+    # Aggregate data
+    agg = cvs.points(data, 'm/z', 'DT', ds.mean('Area'))
 
-# Create Canvas
-cvs = ds.Canvas(plot_width=2000//2, plot_height=2000//2, 
-                x_range=msRange, y_range=dtRange, 
-                # x_axis_type='linear', y_axis_type='linear'
-                )
-# Aggregate data
-agg = cvs.points(data, 'm/z', 'DT', ds.mean('Area'))
 
-img = tf.shade(
-    agg,
-    cmap=magma,
-    # cmap=bgyw, bmy,CET_CBL2,
-    # color_key=None,
-    how='eq_hist', # cbrt, log, linear, eq_hist
-    # alpha=255,
-    # min_alpha=100,
-    name='DTMS Map',
-)
+    cvs.points?
 
-export = partial(export_image, background='black', export_path='export')
-# cm = partial(cMap, reverse=(bgColor!='White'))
-display(HTML('<style>.container { width:100% !important; }</style>'))
-export(img, 'Figure1-ds')
-img = tf.Images(tf.set_background(img, 'black'))
+
+
+    # Shade
+    shade = tf.shade(
+        agg,
+        cmap=magma,
+        # cmap=bgyw, bmy,CET_CBL2,
+        # color_key=None,
+        how='eq_hist', # cbrt, log, linear, eq_hist
+        # alpha=255,
+        # min_alpha=100,
+        name='DTMS Map',
+    )
+    #bg colour
+    tf.Images(tf.set_background(shade, 'black'))
+    #export figure
+    # export = partial(export_image, background='black', export_path='Figure 1 - Data')
+    # display(HTML('<style>.container { width:100% !important; }</style>'))
+    # export(shade, 'Figure1-ds-simple')
+    export_image(shade, filename='Figure1-Datashade', background='black', fmt='.png', export_path='Figure 1 - Datashade')
+    print('Datashader Export Complete')
+
+# mplDTMS()
+dsMap()
 cwd = str(os.getcwd())
-print('Export Complete to ' + cwd)
+print(r'Export Complete to: *-_-_-_-* ' + cwd + ' *-_-_-_-*')
