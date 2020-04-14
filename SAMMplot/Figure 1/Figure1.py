@@ -123,20 +123,26 @@ ppmError, dtError, countsError = (
 msRange = (150, 1500)
 dtRange = (2, 12)
 
-def mplDTMS():
-    #   Default MPL Settings
-    colors = cycler('color', mSun)
-    # plt.rc('figure', edgecolor='k')
-    plt.rc('axes', edgecolor='gray', axisbelow=False, grid=False, prop_cycle=colors)
-    plt.rc('grid', c='0.5', ls='-', lw=0.1)
-    plt.rc('xtick', direction='out', color='gray')
-    plt.rc('ytick', direction='out', color='gray')
-    plt.rc('patch', edgecolor='#003f5c')
+#   Default MPL Settings
+from matplotlib import rcParams
+colors = cycler('color', mSun)
+plt.rc('axes', edgecolor='black', axisbelow=False, grid=False, prop_cycle=colors)
+plt.rc('grid', c='0.5', ls='-', lw=0.1)
+plt.rc('xtick', direction='out', color='black')
+plt.rc('ytick', direction='out', color='black')
+plt.rc('patch', edgecolor='#003f5c')
+plt.rc('lines', linewidth=0.18, aa=True)
+font = {'family' : 'arial',
+        # 'weight' : 'bold',
+        'size'   : 16}
+plt.rc('font', **font)  # pass in the font dict as kwargs
+# plt.rc('figure', edgecolor='k')
 
+def mplDTMS():
     # MPL HEXBIN Plot
-    dtmsMap = plt.figure(figsize=(6, 6), dpi=600, facecolor='k', edgecolor='k')
+    dtmsMap = plt.figure(figsize=(8, 8), dpi=600, facecolor='k', edgecolor='k')
     dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
-    dtmsLayer1.set_title('DTMS Map', color='gray')
+    dtmsLayer1.set_title('DTMS Map', color='black')
     dtmsLayer1.hexbin(mz, dt, 
                         C=area,
                         bins=(np.arange(len(dt))*0.2),  # Change to log for quantitative view
@@ -148,8 +154,8 @@ def mplDTMS():
                         # edgecolor=None
                         cmap='inferno' #'viridis' 'inferno'
                         )
-    dtmsLayer1.set_xlabel('$\it{m/z}$', color='gray')
-    dtmsLayer1.set_ylabel('Drift Time (ms)', color='gray')
+    dtmsLayer1.set_xlabel('$\it{m/z}$', color='black')
+    dtmsLayer1.set_ylabel('Drift Time (ms)', color='black')
     dtmsLayer1.set(xlim=msRange, ylim=dtRange)
     plt.tight_layout()
     dtmsMap.savefig("Figure1-cmap.png", dpi=600)
@@ -167,12 +173,11 @@ from datashader.utils import export_image
 from IPython.core.display import HTML, display
 
 # Create Canvas
-cvs = ds.Canvas(plot_width=1920//2, plot_height=1080//2, 
+cvs = ds.Canvas(plot_width=2000//2, plot_height=2000//2, 
                 x_range=msRange, y_range=dtRange, 
                 # x_axis_type='linear', y_axis_type='linear'
                 )
 # Aggregate data
-data.head()
 agg = cvs.points(data, 'm/z', 'DT', ds.mean('Area'))
 
 img = tf.shade(
@@ -190,4 +195,6 @@ export = partial(export_image, background='black', export_path='export')
 # cm = partial(cMap, reverse=(bgColor!='White'))
 display(HTML('<style>.container { width:100% !important; }</style>'))
 export(img, 'Figure1-ds')
-img = tf.Images(tf.set_background(img, 'black')) 
+img = tf.Images(tf.set_background(img, 'black'))
+cwd = str(os.getcwd())
+print('Export Complete to ' + cwd)

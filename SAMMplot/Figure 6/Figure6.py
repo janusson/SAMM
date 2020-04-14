@@ -1,6 +1,26 @@
+# Figure6.py
+# Plot Z1/Z2 cluster intermediates exhibiting nonlinear morphological growth
+# Python 3.7.4
+# Eric Janusson
+# 150320
+import pandas as pd
+import numpy as np
+# Custom colour schemes:
+def setColourScheme():
+    # miami sunset
+    mSun = ['#003f5c', '#444e86', '#955196', '#dd5182', '#ff6e54', '#ffa600']
+    # maliwan divergent
+    malDiv = '#1e394a #7175ab #ffa7ef #ff7087 #cc6200'.split(' ')
+    # maliwan palette
+    malPal = '#1e394a #414471 #893e78 #c23a53 #cc6200'.split(' ')
+    # bojack gradient
+    bojackGrad = '#D04F6D #84486A #9C4670 #A75C87 #8C5D8B #7088B3 #71B2CA #8EE7F0 #B7F9F9 #A6F5F7'.split(
+        ' ')
+    return(mSun, malDiv, malPal, bojackGrad)
+mSun, malDiv, malPal, bojackGrad = setColourScheme()
 
-
-
+df = pd.read_csv('D:\Programming\SAMM\SAMMplot\Figure 6\Data\Figure 6 Data(EJ3-60-90-BA1).csv') 
+df.head()
 
 # MPL Settings
 colors = cycler('color', mSun)
@@ -15,6 +35,9 @@ font = {'family' : 'arial',
         'weight' : 'bold',
         'size'   : 16}
 plt.rc('font', **font)  # pass in the font dict as kwargs
+
+from matplotlib import pyplot as plt
+plt.scatter(df['mz'], df['DT'])
 
 
 ## Regression analysis
