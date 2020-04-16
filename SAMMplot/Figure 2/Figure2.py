@@ -18,8 +18,7 @@ def setColourScheme():
     # maliwan palette
     malPal = '#1e394a #414471 #893e78 #c23a53 #cc6200'.split(' ')
     # bojack gradient
-    bojackGrad = '#D04F6D #84486A #9C4670 #A75C87 #8C5D8B #7088B3 #71B2CA #8EE7F0 #B7F9F9 #A6F5F7'.split(
-        ' ')
+    bojackGrad = '#D04F6D #84486A #9C4670 #A75C87 #8C5D8B #7088B3 #71B2CA #8EE7F0 #B7F9F9 #A6F5F7'.split(' ')
     return(mSun, malDiv, malPal, bojackGrad)
 
 mSun, malDiv, malPal, bojackGrad = setColourScheme()

@@ -73,7 +73,7 @@ def importSAMM3D(kwargs=None):
     apexDF = pd.read_csv(apexMS)
     x, y, z, = (
         list(apexDF['m_z']),
-        list(apexDF['mobility'] * 0.16),
+        list(apexDF['mobility']), #Notw: this is in bins and must be converted to ms
         list(apexDF['area']),
     )
     xError, yError, zError = (
@@ -93,8 +93,8 @@ data = importSAMM3D()
 ## Data Processing
 def processData():
     # 3D
-    dims = data[(data['m/z'] > 150) & (data['m/z'] < 3000) &
-                (data['DT'] > 0) & (data['DT'] < 200) 
+    dims = data[(data['m/z'] > 150) & (data['m/z'] < 3000) #Set data extraction scales
+                # & (data['DT'] > 0) & (data['DT'] < 2000) 
                 # & (data['Area'] > 1)
                 ]
     # 2D
@@ -115,6 +115,7 @@ ppmError, dtError, countsError = (
 msRange = (150, 1500)
 dtRange = (2, 12)
 
+
 #   Default MPL Settings
 from matplotlib import rcParams
 colors = cycler('color', mSun)
@@ -132,7 +133,7 @@ plt.rc('font', **font)  # pass in the font dict as kwargs
 
 def mplDTMS():
     # MPL HEXBIN Plot
-    dtmsMap = plt.figure(figsize=(8, 8), dpi=1200, facecolor='k', edgecolor='k')
+    dtmsMap = plt.figure(figsize=(8, 8), dpi=600, facecolor='k', edgecolor='k')
     dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
     dtmsLayer1.set_title('DTMS Map', color='black')
 
@@ -152,8 +153,9 @@ def mplDTMS():
     dtmsLayer1.set_ylabel('Drift Time (ms)', color='black')
     dtmsLayer1.set(xlim=msRange, ylim=dtRange)
     plt.tight_layout()
-    dtmsMap.savefig("Figure1-cmap.png", dpi=1200)
+    dtmsMap.savefig("Figure1-cmap.png", dpi=600)
     print('MPL Export Complete')
+
 
 def dsMap():
     # Datashader 3D map
@@ -168,27 +170,23 @@ def dsMap():
     from IPython.core.display import HTML, display
     
     # Create Canvas
-    cvs = ds.Canvas(plot_width=1920//2, plot_height=1920//2, 
+    cvs = ds.Canvas(plot_width=1000//2, plot_height=1000//2, 
                     x_range=msRange, y_range=dtRange, 
                     # x_axis_type='linear', y_axis_type='linear'
                     )
     # Aggregate data
-    agg = cvs.points(data, 'm/z', 'DT', ds.mean('Area'))
-
-
-    cvs.points?
-
-
-
+    # agg = cvs.points(data, 'm/z', 'DT', ds.mean('Area'))
+    agg = cvs.points(data, 'm/z', 'DT', ds.max('Area'))
+    
     # Shade
     shade = tf.shade(
         agg,
-        cmap=magma,
+        cmap=CET_CBL2,
         # cmap=bgyw, bmy,CET_CBL2,
         # color_key=None,
         how='eq_hist', # cbrt, log, linear, eq_hist
         # alpha=255,
-        # min_alpha=100,
+        min_alpha=100,
         name='DTMS Map',
     )
     #bg colour
@@ -197,10 +195,12 @@ def dsMap():
     # export = partial(export_image, background='black', export_path='Figure 1 - Data')
     # display(HTML('<style>.container { width:100% !important; }</style>'))
     # export(shade, 'Figure1-ds-simple')
-    export_image(shade, filename='Figure1-Datashade', background='black', fmt='.png', export_path='Figure 1 - Datashade')
+    export_image(shade, filename='CET_CBL2', background='black', fmt='.png', export_path='D:\Programming\SAMM\SAMMplot\Figure 1\\')
     print('Datashader Export Complete')
 
-# mplDTMS()
-dsMap()
+mplDTMS()
+# dsMap()
+
+
 cwd = str(os.getcwd())
 print(r'Export Complete to: *-_-_-_-* ' + cwd + ' *-_-_-_-*')
