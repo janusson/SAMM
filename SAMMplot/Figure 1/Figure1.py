@@ -90,13 +90,16 @@ def importSAMM3D(kwargs=None):
 specData, fileID = importSAMM2D()
 data = importSAMM3D()
 
+
 ## Data Processing
 def processData():
     # 3D
-    dims = data[(data['m/z'] > 150) & (data['m/z'] < 3000) #Set data extraction scales
-                # & (data['DT'] > 0) & (data['DT'] < 2000) 
+    dims = data
+    # dims = data[(data['m/z'] > 150) & (data['m/z'] < 3000) #Set scales
+                # & (data['DT'] > 0) 
+                # & (data['DT'] < 2000) 
                 # & (data['Area'] > 1)
-                ]
+                # ]
     # 2D
     msMass, msCounts, dtTime, dtIntensity = (specData['m/z'], specData['Counts'], 
     specData['Drift Time'], specData['Intensity'])
@@ -108,6 +111,7 @@ def processData():
                                     )/(dims['log(Area)'].max()-dims['log(Area)'].min())
     return dims
 dims = processData()
+
 mz, dt, area, = (dims['m/z'], dims['DT'], dims['Area'])
 ppmError, dtError, countsError = (
     dims['m/z Error'], dims['DT Error'], dims['Area Error'])
@@ -129,7 +133,7 @@ font = {'family' : 'arial',
         # 'weight' : 'bold',
         'size'   : 16}
 plt.rc('font', **font)  # pass in the font dict as kwargs
-# plt.rc('figure', edgecolor='k')
+plt.rc('figure', edgecolor='white')
 
 def mplDTMS():
     # MPL HEXBIN Plot
@@ -151,11 +155,10 @@ def mplDTMS():
     
     dtmsLayer1.set_xlabel('$\it{m/z}$', color='black')
     dtmsLayer1.set_ylabel('Drift Time (ms)', color='black')
-    dtmsLayer1.set(xlim=msRange, ylim=dtRange)
+    # dtmsLayer1.set(xlim=msRange, ylim=dtRange)
     plt.tight_layout()
-    dtmsMap.savefig("Figure1-cmap.png", dpi=600)
+    dtmsMap.savefig("Figure1-cmap.png")
     print('MPL Export Complete')
-
 
 def dsMap():
     # Datashader 3D map
@@ -198,9 +201,36 @@ def dsMap():
     export_image(shade, filename='CET_CBL2', background='black', fmt='.png', export_path='D:\Programming\SAMM\SAMMplot\Figure 1\\')
     print('Datashader Export Complete')
 
-mplDTMS()
+# mplDTMS()
 # dsMap()
-
 
 cwd = str(os.getcwd())
 print(r'Export Complete to: *-_-_-_-* ' + cwd + ' *-_-_-_-*')
+
+
+def mplDTMS2():
+    dtmsMap = plt.figure(figsize=(4, 4), dpi=600)
+    dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
+
+
+    dtmsLayer1.set_title('DTMS Map', color='black')
+
+    dtmsLayer1.hexbin(data['m/z'], data['DT'], 
+                        C=data['Area'],
+                        # bins=(np.arange(len(dt))*0.2),  # Change to log for quantitative view
+                        bins='log'
+                        # gridsize=(250, 500),
+                        # xscale='log',
+                        # yscale='log'
+                        # alpha=0.8,
+                        # edgecolor=None
+                        # cmap='inferno' #'viridis' 'inferno'
+                        )
+    
+    dtmsLayer1.set_xlabel('$\it{m/z}$', color='black')
+    dtmsLayer1.set_ylabel('Drift Time (ms)', color='black')
+    # dtmsLayer1.set(xlim=msRange, ylim=dtRange)
+    plt.tight_layout()
+    dtmsMap.savefig("Figure-cmap-TEST.png")
+    print('MPL Export Complete')
+mplDTMS2()
