@@ -8,6 +8,10 @@
 import os
 import pandas as pd
 import numpy as np
+import matplotlib as mpl
+from cycler import cycler
+from matplotlib import pyplot as plt
+
 
 # Custom colour schemes:
 def setColourScheme():
@@ -107,27 +111,28 @@ dims.sort_values('log(Area)', inplace=True)
 dims[r'Normalized log(Area)'] = (dims['log(Area)']-dims['log(Area)'].min()
                                  )/(dims['log(Area)'].max()-dims['log(Area)'].min())
 
-import matplotlib as mpl
-from cycler import cycler
-from matplotlib import pyplot as plt
-
-msRange = [150, 1500]
-dtRange = [1, 12]
+## Plotting
+msRange = (150, 2000)
+#conversion
+dtLow = 12*(22.1)/200
+dtHigh = 75*(22.1)/200
+dtRange = (dtLow, dtHigh)
 
 #   Default MPL Settings
-from matplotlib import rcParams
 colors = cycler('color', mSun)
-plt.rc('axes', edgecolor='black', axisbelow=False, grid=False, prop_cycle=colors)
+from matplotlib import rcParams
+plt.rc('axes', edgecolor='gray', axisbelow=False, grid=False)
+# plt.rc('axes', edgecolor='gray', axisbelow=False, grid=False, prop_cycle=colors)
 plt.rc('grid', c='0.5', ls='-', lw=0.1)
-plt.rc('xtick', direction='out', color='black')
-plt.rc('ytick', direction='out', color='black')
+plt.rc('xtick', direction='out', color='gray')
+plt.rc('ytick', direction='out', color='gray')
 plt.rc('patch', edgecolor='#003f5c')
 plt.rc('lines', linewidth=0.18, aa=True)
 font = {'family' : 'arial',
-        # 'weight' : 'bold',
+        'weight' : 'bold',
         'size'   : 16}
 plt.rc('font', **font)  # pass in the font dict as kwargs
-plt.rc('figure', edgecolor='white')
+
 
 # # Mass Spectrum
 # figure1 = plt.figure(figsize=(6, 3), dpi=600)
@@ -135,11 +140,11 @@ plt.rc('figure', edgecolor='white')
 # # inset = figure1.add_axes([0.55, 0.65, 0.3, 0.2]) # Inset
 # # inset.set_title('Mobilogram')
 # # inset.plot(dtTime, dtIntensity)
-# msLayer1.set_title('Mass Spectrum', color='k')
+# msLayer1.set_title('Mass Spectrum', color='gray')
 # msLayer1.plot(msMass, msCounts)
 # msLayer1.fill_between(msMass, 0, msCounts, facecolor=str(mSun[0]), alpha=0.1)
-# msLayer1.set_xlabel('$\it{m/z}$', color='k')
-# msLayer1.set_ylabel('Intensity', color='k')
+# msLayer1.set_xlabel('$\it{m/z}$', color='gray')
+# msLayer1.set_ylabel('Intensity', color='gray')
 # plt.xlim(msRange)
 # plt.ylim(0)
 # plt.tight_layout()
@@ -148,11 +153,11 @@ plt.rc('figure', edgecolor='white')
 # # Mobilogram
 # figure2 = plt.figure(figsize=(6, 3), dpi=600)
 # dtLayer1 = figure2.add_axes([0.1, 0.1, 0.8, 0.8])
-# dtLayer1.set_title('Mobilogram', color='k')
+# dtLayer1.set_title('Mobilogram', color='gray')
 # dtLayer1.plot(dtTime, dtIntensity, color=str(mSun[2]), lw=1)
 # dtLayer1.fill_between(dtTime, 0, dtIntensity, facecolor=str(mSun[2]), alpha=0.2)
-# dtLayer1.set_xlabel('Drift Time (ms)', color='k')
-# dtLayer1.set_ylabel('Intensity', color='k')
+# dtLayer1.set_xlabel('Drift Time (ms)', color='gray')
+# dtLayer1.set_ylabel('Intensity', color='gray')
 # plt.xlim(dtRange)
 # plt.ylim(0)
 # plt.tight_layout()
@@ -161,7 +166,7 @@ plt.rc('figure', edgecolor='white')
 # 3D Plot
 dtmsMap = plt.figure(figsize=(6, 6), dpi=600, facecolor='k', edgecolor='k')
 dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
-dtmsLayer1.set_title('DTMS Map', color='k')
+dtmsLayer1.set_title('DTMS Map', color='gray')
 dtmsLayer1.hexbin(mz, dt, 
                     C=area,
                     bins=(np.arange(len(dt))*0.2),  # Change to log for quantitative view
@@ -173,37 +178,23 @@ dtmsLayer1.hexbin(mz, dt,
                     # edgecolor=None
                     cmap='inferno' #'viridis' 'inferno'
                     )
-dtmsLayer1.set_xlabel('$\it{m/z}$', color='k')
-dtmsLayer1.set_ylabel('Drift Time (ms)', color='k')
+dtmsLayer1.set_xlabel('$\it{m/z}$', color='gray')
+dtmsLayer1.set_ylabel('Drift Time (ms)', color='gray')
 dtmsLayer1.set(xlim=(msRange), ylim=(dtRange))
 plt.tight_layout()
-dtmsMap.savefig("dsdasdasdasdsadadsd.png", dpi=600, export_path='D:\Programming\SAMM\SAMMplot\Figure 2\\')
+dtmsMap.savefig("Figure2cmap.png", dpi=600)
 
 #   Datashader 3D map
 import datashader as ds, datashader.transfer_functions as tf
+import matplotlib
 
 cvs = ds.Canvas(plot_width=600, plot_height=600)
 agg = cvs.points(data, 'm/z', 'DT', ds.mean('Area'))
 img = tf.shade(agg, how = 'log')
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ###
+
 # def scatter_hist(x, y, ax, ax_histx, ax_histy):
 #     # no labels
 #     ax_histx.tick_params(axis="x", labelbottom=False)

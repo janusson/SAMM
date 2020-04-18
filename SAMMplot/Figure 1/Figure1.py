@@ -28,13 +28,43 @@ def setColourScheme():
 mSun, malDiv, malPal, bojackGrad = setColourScheme()
 # Data import functions (From TWIMExtract and APEX3D Output) customized to user input (default: ID: 57-24-RA2)
 
-def importSAMM2D(kwargs=None):
+#Old
+# def importSAMM2D(kwargs=None):      
+#     # Load 2D CSV files for FR, Z1, Z2
+#     # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): ') #TEST
+#     # userInput = input('Example: 57-24-RA2') #TEST
+#     # headers = ['Nuclearity', 'm/z', r'DT (bins)']
+#     # df = pd.read_csv(r'D:\2-SAMM\SAMM - Data Workup Folder\EJ3-60-SAMM3-MoMonitoring\EJ3-60 - SAMM Monitor\EJ3-60-HitList-Z2.csv', names = headers)
+#     userInput = r'57-158-BC4'  # TEST
+#     basePath = r'D:\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\Experimental Data\3-57-SAMM2\2DExtract(3-57-2)'
+#     frMS = str(basePath + r'\Full Range\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
+#                userInput + r'-Sampling-2_fn-1_#FullRange-POMSolv-Rangefile.txt_raw.csv')
+#     frDT = str(basePath + r'\Full Range\DT\EJ3-' + userInput + r'-Sampling-2\DT_EJ3-' +
+#                userInput + r'-Sampling-2_fn-1_#FullRange-POMSolv-Rangefile.txt_raw.csv')
+#     z1MS = str(basePath + r'\Z1\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
+#                userInput + r'-Sampling-2_fn-1_#POMSolv-Z1-RuleFile.rul_raw.csv')
+#     z1DT = str(basePath + r'\Z1\DT\EJ3-' + userInput + r'-Sampling-2\DT_EJ3-' +
+#                userInput + r'-Sampling-2_fn-1_#POMSolv-Z1-RuleFile.rul_raw.csv')
+#     z2MS = str(basePath + r'\Z2\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
+#                userInput + r'-Sampling-2_fn-1_#POMSolv-Z2-RuleFile.rul_raw.csv')
+#     z2DT = str(basePath + r'\Z2\DT\EJ3-' + userInput + r'-Sampling-2\DT_EJ3-' +
+#                userInput + r'-Sampling-2_fn-1_#POMSolv-Z2-RuleFile.rul_raw.csv')
+#     paths = [frMS, frDT, z1MS, z1DT, z2MS, z2DT]
+#     frScatter = ([pd.read_csv(i, skiprows=1)
+#                   for i in paths if os.path.lexists(i) and i[104:106] == r'Fu'])
+#     z1Scatter = ([pd.read_csv(i, skiprows=1)
+#                   for i in paths if os.path.lexists(i) and i[104:106] == r'Z1'])
+#     z2Scatter = ([pd.read_csv(i, skiprows=1)
+#                   for i in paths if os.path.lexists(i) and i[104:106] == r'Z2'])
+#     frScatter = pd.concat([frScatter[0], frScatter[1]], axis=1)
+#     frScatter.columns = ['m/z', 'Counts', 'Drift Time', 'Intensity']
+#     return frScatter, userInput
+
+def importSAMM2D(userInput=None):
     # Load 2D CSV files for FR, Z1, Z2
-    # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): ') #TEST
-    # userInput = input('Example: 57-24-RA2') #TEST
-    # headers = ['Nuclearity', 'm/z', r'DT (bins)']
-    # df = pd.read_csv(r'D:\2-SAMM\SAMM - Data Workup Folder\EJ3-60-SAMM3-MoMonitoring\EJ3-60 - SAMM Monitor\EJ3-60-HitList-Z2.csv', names = headers)
-    userInput = r'57-158-BC4'  # TEST
+    # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): \n')
+    # userInput = input('Example: 57-158-BC4')
+    # userInput = '57-158-BC4'
     basePath = r'D:\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\Experimental Data\3-57-SAMM2\2DExtract(3-57-2)'
     frMS = str(basePath + r'\Full Range\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
                userInput + r'-Sampling-2_fn-1_#FullRange-POMSolv-Rangefile.txt_raw.csv')
@@ -51,13 +81,17 @@ def importSAMM2D(kwargs=None):
     paths = [frMS, frDT, z1MS, z1DT, z2MS, z2DT]
     frScatter = ([pd.read_csv(i, skiprows=1)
                   for i in paths if os.path.lexists(i) and i[104:106] == r'Fu'])
-    z1Scatter = ([pd.read_csv(i, skiprows=1)
-                  for i in paths if os.path.lexists(i) and i[104:106] == r'Z1'])
-    z2Scatter = ([pd.read_csv(i, skiprows=1)
-                  for i in paths if os.path.lexists(i) and i[104:106] == r'Z2'])
     frScatter = pd.concat([frScatter[0], frScatter[1]], axis=1)
     frScatter.columns = ['m/z', 'Counts', 'Drift Time', 'Intensity']
-    return frScatter, userInput
+    z1Scatter = ([pd.read_csv(i, skiprows=1)
+                  for i in paths if os.path.lexists(i) and i[104:106] == r'Z1'])
+    z1Scatter = pd.concat([z1Scatter[0], z1Scatter[1]], axis=1)
+    z1Scatter.columns = ['m/z', 'Counts', 'Drift Time', 'Intensity']
+    z2Scatter = ([pd.read_csv(i, skiprows=1)
+                  for i in paths if os.path.lexists(i) and i[104:106] == r'Z2'])
+    z2Scatter = pd.concat([z2Scatter[0], z2Scatter[1]], axis=1)
+    z2Scatter.columns = ['m/z', 'Counts', 'Drift Time', 'Intensity']
+    return frScatter, z1Scatter, z2Scatter, userInput
 
 def importSAMM3D(kwargs=None):
     # Load Apex3D CSV files for given experiment
@@ -90,16 +124,14 @@ def importSAMM3D(kwargs=None):
 specData, fileID = importSAMM2D()
 data = importSAMM3D()
 
-
 ## Data Processing
 def processData():
     # 3D
-    dims = data
-    # dims = data[(data['m/z'] > 150) & (data['m/z'] < 3000) #Set scales
-                # & (data['DT'] > 0) 
-                # & (data['DT'] < 2000) 
-                # & (data['Area'] > 1)
-                # ]
+    # dims = data
+    dims = data[(data['m/z'] > 150) & (data['m/z'] < 2000) #Set scales
+                & (data['DT'] > 12)
+                & (data['DT'] < 75) 
+                & (data['Area'] > 1)]
     # 2D
     msMass, msCounts, dtTime, dtIntensity = (specData['m/z'], specData['Counts'], 
     specData['Drift Time'], specData['Intensity'])
@@ -116,9 +148,11 @@ mz, dt, area, = (dims['m/z'], dims['DT'], dims['Area'])
 ppmError, dtError, countsError = (
     dims['m/z Error'], dims['DT Error'], dims['Area Error'])
 ## Plotting
-msRange = (150, 1500)
-dtRange = (2, 12)
+msRange = (150, 2000)
+dtRange = (12, 75)
 
+dtLow = 12*(22.1)/200
+dtHigh = 75*(22.1)/200
 
 #   Default MPL Settings
 from matplotlib import rcParams
@@ -137,13 +171,14 @@ plt.rc('figure', edgecolor='white')
 
 def mplDTMS():
     # MPL HEXBIN Plot
-    dtmsMap = plt.figure(figsize=(8, 8), dpi=600, facecolor='k', edgecolor='k')
+    # dtmsMap = plt.figure(figsize=(8, 8), dpi=600, facecolor='k', edgecolor='k')
+    dtmsMap = plt.figure(figsize=(8, 8), dpi=600)
     dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
     dtmsLayer1.set_title('DTMS Map', color='black')
 
     dtmsLayer1.hexbin(mz, dt, 
                         C=area,
-                        bins=(np.arange(len(dt))*0.2),  # Change to log for quantitative view
+                        bins=(np.arange(len(dt))*0.5),  # Change to log for quantitative view
                         # bins='log'
                         gridsize=(250, 500),
                         # xscale='log',
@@ -155,7 +190,7 @@ def mplDTMS():
     
     dtmsLayer1.set_xlabel('$\it{m/z}$', color='black')
     dtmsLayer1.set_ylabel('Drift Time (ms)', color='black')
-    # dtmsLayer1.set(xlim=msRange, ylim=dtRange)
+    dtmsLayer1.set(xlim=msRange, ylim=dtRange)
     plt.tight_layout()
     dtmsMap.savefig("Figure1-cmap.png")
     print('MPL Export Complete')
@@ -174,13 +209,15 @@ def dsMap():
     
     # Create Canvas
     cvs = ds.Canvas(plot_width=1000//2, plot_height=1000//2, 
-                    x_range=msRange, y_range=dtRange, 
+                    x_range=(150, 1500), y_range=(12, 75))
                     # x_axis_type='linear', y_axis_type='linear'
-                    )
+
     # Aggregate data
-    # agg = cvs.points(data, 'm/z', 'DT', ds.mean('Area'))
-    agg = cvs.points(data, 'm/z', 'DT', ds.max('Area'))
-    
+
+    agg = cvs.points(data, 'm/z', 'DT', ds.mean('Area')) #best respons so far
+    # agg = cvs.points(data, 'm/z', 'DT')
+    # agg = cvs.points(data, 'm/z', 'DT', ds.var('Area')) #ds.reductions??
+
     # Shade
     shade = tf.shade(
         agg,
@@ -192,45 +229,69 @@ def dsMap():
         min_alpha=100,
         name='DTMS Map',
     )
-    #bg colour
+    #bg colour, spread
+    # tf.spread(shade, px=5, shape='circle')
     tf.Images(tf.set_background(shade, 'black'))
+    # , tf.spread(shade, px = 10))
     #export figure
     # export = partial(export_image, background='black', export_path='Figure 1 - Data')
     # display(HTML('<style>.container { width:100% !important; }</style>'))
     # export(shade, 'Figure1-ds-simple')
-    export_image(shade, filename='CET_CBL2', background='black', fmt='.png', export_path='D:\Programming\SAMM\SAMMplot\Figure 1\\')
+    export_image(shade, filename='dtmsMap-testing-800', background='black', fmt='.png', export_path='D:\Programming\SAMM\SAMMplot\Figure 1\\')
     print('Datashader Export Complete')
 
-# mplDTMS()
-# dsMap()
 
 cwd = str(os.getcwd())
 print(r'Export Complete to: *-_-_-_-* ' + cwd + ' *-_-_-_-*')
 
 
 def mplDTMS2():
-    dtmsMap = plt.figure(figsize=(4, 4), dpi=600)
+    dtmsMap = plt.figure(figsize=(6, 6), dpi=2400)
     dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
-
 
     dtmsLayer1.set_title('DTMS Map', color='black')
 
     dtmsLayer1.hexbin(data['m/z'], data['DT'], 
                         C=data['Area'],
-                        # bins=(np.arange(len(dt))*0.2),  # Change to log for quantitative view
-                        bins='log'
-                        # gridsize=(250, 500),
+                        bins=(np.arange(len(dt))*0.02),  # Change to log for quantitative view
+                        # bins='log',
+                        gridsize=(250, 500),
                         # xscale='log',
                         # yscale='log'
                         # alpha=0.8,
                         # edgecolor=None
-                        # cmap='inferno' #'viridis' 'inferno'
+                        cmap='inferno' #'viridis' 'inferno'
                         )
     
     dtmsLayer1.set_xlabel('$\it{m/z}$', color='black')
     dtmsLayer1.set_ylabel('Drift Time (ms)', color='black')
     # dtmsLayer1.set(xlim=msRange, ylim=dtRange)
     plt.tight_layout()
-    dtmsMap.savefig("Figure-cmap-TEST.png")
+    dtmsMap.savefig("Figure-cmap-TEST.png", export_path='D:\Programming\SAMM\SAMMplot\Figure 1\\')
     print('MPL Export Complete')
-mplDTMS2()
+
+## Plotting Axes (ms)
+
+def mplDTMSaxes():
+    # MPL HEXBIN Plot
+    # dtmsMap = plt.figure(figsize=(8, 8), dpi=600, facecolor='k', edgecolor='k')
+    dtmsMap = plt.figure(figsize=(8, 8), dpi=1200)
+    dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
+    dtmsLayer1.set_title('DTMS Map', color='black')
+
+    dtmsLayer1.hexbin([1,2], [1,2], gridsize=(250, 500))
+    
+    dtmsLayer1.set_xlabel('$\it{m/z}$', color='black')
+    dtmsLayer1.set_ylabel('Drift Time (ms)', color='black')
+    dtRange = ((12*(22.1)/200),(75*(22.1)/200))
+    dtmsLayer1.set(xlim=msRange, ylim=dtRange)
+    plt.tight_layout()
+    dtmsMap.savefig("Figure1-axes.png")
+    print('MPL Export Complete')
+
+#Run Plots:
+# Matplotlib hexbin
+# mplDTMS()
+# Datashader plot
+dsMap()
+# mplDTMSaxes()

@@ -133,7 +133,7 @@ figure4 = sns.pairplot(
 #Change alpha
 plt.tight_layout()
 # plt.plot()
-figure4.savefig('Figure4-a.png') # Save figure
+figure4.savefig('Figure4-a.png', export_path='D:\Programming\SAMM\SAMMplot\Figure 4\\') # Save figure
 print('Figure file exported as Figure4.png')
 
 
