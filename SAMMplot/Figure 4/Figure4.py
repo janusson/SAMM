@@ -161,3 +161,13 @@ print('Figure file exported as Figure4.png')
 #     # ylim=(int(solventPlot['Z2DT-LWI'].min())*-1, int(solventPlot['Z2DT-LWI'].max())*1.1)
 # )
 # plt.show()
+
+
+
+#     # Seaborn
+# sns.set(style="ticks")
+
+# # # Show the results of a linear regression within each dataset
+# sns.lmplot(x="m/z", y="DT", col="Area", hue="Area", data=plotdf,
+#            col_wrap=2, ci=None, palette="muted", height=4,
+#            scatter_kws={"s": 50, "alpha": 1})

@@ -159,32 +159,32 @@ plt.rc('figure', edgecolor='white')
 # plt.savefig("Figure2dt.png", dpi=600)
 
 # 3D Plot
-dtmsMap = plt.figure(figsize=(6, 6), dpi=600, facecolor='k', edgecolor='k')
-dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
-dtmsLayer1.set_title('DTMS Map', color='k')
-dtmsLayer1.hexbin(mz, dt, 
-                    C=area,
-                    bins=(np.arange(len(dt))*0.2),  # Change to log for quantitative view
-                    # bins='log'
-                    gridsize=(250, 500),
-                    # xscale='log',
-                    # yscale='log'
-                    # alpha=0.8,
-                    # edgecolor=None
-                    cmap='inferno' #'viridis' 'inferno'
-                    )
-dtmsLayer1.set_xlabel('$\it{m/z}$', color='k')
-dtmsLayer1.set_ylabel('Drift Time (ms)', color='k')
-dtmsLayer1.set(xlim=(msRange), ylim=(dtRange))
-plt.tight_layout()
-dtmsMap.savefig("dsdasdasdasdsadadsd.png", dpi=600, export_path='D:\Programming\SAMM\SAMMplot\Figure 2\\')
+# dtmsMap = plt.figure(figsize=(6, 6), dpi=600, facecolor='k', edgecolor='k')
+# dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
+# dtmsLayer1.set_title('DTMS Map', color='k')
+# dtmsLayer1.hexbin(mz, dt, 
+#                     C=area,
+#                     bins=(np.arange(len(dt))*0.2),  # Change to log for quantitative view
+#                     # bins='log'
+#                     gridsize=(250, 500),
+#                     # xscale='log',
+#                     # yscale='log'
+#                     # alpha=0.8,
+#                     # edgecolor=None
+#                     cmap='inferno' #'viridis' 'inferno'
+#                     )
+# dtmsLayer1.set_xlabel('$\it{m/z}$', color='k')
+# dtmsLayer1.set_ylabel('Drift Time (ms)', color='k')
+# dtmsLayer1.set(xlim=(msRange), ylim=(dtRange))
+# plt.tight_layout()
+# dtmsMap.savefig("Figure 2.png", dpi=600, export_path='D:\Programming\SAMM\SAMMplot\Figure 2\\')
 
-#   Datashader 3D map
-import datashader as ds, datashader.transfer_functions as tf
+# #   Datashader 3D map
+# import datashader as ds, datashader.transfer_functions as tf
 
-cvs = ds.Canvas(plot_width=600, plot_height=600)
-agg = cvs.points(data, 'm/z', 'DT', ds.mean('Area'))
-img = tf.shade(agg, how = 'log')
+# cvs = ds.Canvas(plot_width=600, plot_height=600)
+# agg = cvs.points(data, 'm/z', 'DT', ds.mean('Area'))
+# img = tf.shade(agg, how = 'log')
 
 
 

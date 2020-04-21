@@ -240,11 +240,6 @@ def dsMap():
     export_image(shade, filename='dtmsMap-testing-800', background='black', fmt='.png', export_path='D:\Programming\SAMM\SAMMplot\Figure 1\\')
     print('Datashader Export Complete')
 
-
-cwd = str(os.getcwd())
-print(r'Export Complete to: *-_-_-_-* ' + cwd + ' *-_-_-_-*')
-
-
 def mplDTMS2():
     dtmsMap = plt.figure(figsize=(6, 6), dpi=2400)
     dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
@@ -295,3 +290,6 @@ def mplDTMSaxes():
 # Datashader plot
 dsMap()
 # mplDTMSaxes()
+
+cwd = str(os.getcwd())
+print(r'Export Complete to: *-_-_-_-* ' + cwd + ' *-_-_-_-*')
