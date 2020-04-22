@@ -15,14 +15,15 @@ import matplotlib as mpl
 from cycler import cycler
 from matplotlib import pyplot as plt
 
+#Figure 2 Default:
+userInput = '57-158-BC4'
 msRange = [780, 1100]
 dtRange = [30, 50]
 areaMin = 1
 dtTime = [num*((22.1)/200) for num in dtRange]  # time in ms
+dtTime
 
 # Custom colour schemes:
-
-
 def setColourScheme():
     mSun = ['#003f5c', '#444e86', '#955196', '#dd5182', '#ff6e54', '#ffa600']
     malDiv = '#1e394a #7175ab #ffa7ef #ff7087 #cc6200'.split(' ')
@@ -30,12 +31,9 @@ def setColourScheme():
     bojackGrad = '#D04F6D #84486A #9C4670 #A75C87 #8C5D8B #7088B3 #71B2CA #8EE7F0 #B7F9F9 #A6F5F7'.split(
         ' ')
     return(mSun, malDiv, malPal, bojackGrad)
-
-
 mSun, malDiv, malPal, bojackGrad = setColourScheme()
+
 # Data import functions (From TWIMExtract and APEX3D Output) customized to user input (default: ID: 57-24-RA2)
-
-
 def importSAMM2D(userInput=None):
     # Load 2D CSV files for FR, Z1, Z2
     # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): \n')
@@ -69,7 +67,6 @@ def importSAMM2D(userInput=None):
     z2Scatter.columns = ['m/z', 'Counts', 'Drift Time', 'Intensity']
     return frScatter, z1Scatter, z2Scatter, userInput
 
-
 def importSAMM3D(kwargs=None):
     # Load Apex3D CSV files for given experiment
     # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): ') #TEST
@@ -99,8 +96,8 @@ def importSAMM3D(kwargs=None):
 
 
 # Create Dataframes for 2 and 3D data
-# specData, z1spec, z2spec, fileID = importSAMM2D('57-158-BC4')
-data = importSAMM3D()
+data = importSAMM3D('57-158-BC4')
+specData, z1spec, z2spec, fileID = importSAMM2D('57-158-BC4')
 
 # Data Processing
 dims = data[(data['m/z'] > msRange[0]) & (data['m/z'] < msRange[1]) &
@@ -109,11 +106,11 @@ dims = data[(data['m/z'] > msRange[0]) & (data['m/z'] < msRange[1]) &
 mz, dt, area, = (dims['m/z'], dims['DT'], dims['Area'])
 
 # Scales
-dims[r'log(Area)'] = dims['Area'].apply(lambda x: np.log(x))
+# dims[r'log(Area)'] = dims['Area'].apply(lambda x: np.log(x))
 # dims[r'DT (ms)'] = data['DT'].apply(lambda x: (x*0.1105))
 
 # Sort
-dims.sort_values('Area', inplace=True)
+dims.sort_values('Area', inplace=True)  # Problem with sorting copy
 
 #   Default MPL Settings
 colors = cycler('color', mSun)
@@ -125,7 +122,7 @@ font = {'family': 'arial',
 plt.rc('font', **font)  # pass in the font dict as kwargs
 plt.rc('figure', edgecolor='white')
 
-
+# Plot scatter density (datashader MPL)
 def mplScatDen():
     x = dims['m/z']
     y = dims['DT']
@@ -150,14 +147,12 @@ def mplScatDen():
     plt.tight_layout()
     plt.show()
 
-    fig.savefig('fig2-scatter-density-mpl.png',
+    fig.savefig('fig2-scatter-density-mpl.svg',
                 export_path='D:\Programming\SAMM\SAMMplot\Figure 2\Figure 2 - Exports\\')
     print('MPL Scatter Export Complete')
 # mplScatDen()
 
 # Plotting Axes (ms)
-
-
 def mplDTMSaxes():
     # MPL HEXBIN Plot
     # dtmsMap = plt.figure(figsize=(8, 8), dpi=600, facecolor='k', edgecolor='k')
@@ -172,12 +167,62 @@ def mplDTMSaxes():
     # dtRange = ((12*(22.1)/200),(75*(22.1)/200))
     dtmsLayer1.set(xlim=msRange, ylim=dtTime)
     plt.tight_layout()
-    dtmsMap.savefig('Figure2-axes.png',
-                    export_path='D:\Programming\SAMM\SAMMplot\Figure 2\Figure 2 - Exports\\')
+    dtmsMap.savefig('D:\Programming\SAMM\SAMMplot\Figure 2\Figure 2 - Exports\Figure2-axes.svg')
     print('Axes Export Complete')
 # mplDTMSaxes()
 
+#2D Plotting
+def separateData(dataset):
+    msData = dataset.drop(['Drift Time', 'Intensity'], axis=1)
+    dtData = dataset.drop(['m/z', 'Counts'], axis=1)
+    msData = msData[(msData['m/z'] > msRange[0]) & (msData['m/z'] < msRange[1])]
+    dtData = dtData[ (dataset['Drift Time'] > 3.315) & (dataset['Drift Time'] < 5.525)]
+    return msData, dtData
+frMS, frDT = separateData(specData)
+z1MS, z1DT = separateData(z1spec)
+z2MS, z2DT = separateData(z2spec)
 
-# 2D Plotting
-msMass, msCounts, dtTime, dtIntensity = (specData['m/z'], specData['Counts'],
-                                         specData['Drift Time'], specData['Intensity'])
+# Mass Spectrum
+def massSpecerize(dataset):
+    cvs = plt.figure(figsize=(6, 3), dpi=1200)
+    msLayer1 = cvs.add_axes([0.1, 0.1, 0.8, 0.8])
+    # inset = figure1.add_axes([0.55, 0.65, 0.3, 0.2]) # Inset
+    # inset.set_title('Mobilogram')
+    # inset.plot(dtTime, dtIntensity)
+    msLayer1.set_title(str(userInput) + ' Mass Spectrum', color='k')
+    msLayer1.plot(dataset['m/z'], dataset['Counts'], lw=0.3)
+    msLayer1.fill_between(dataset['m/z'], 0, dataset['Counts'], facecolor=str(mSun[0]), alpha=0.1)
+    msLayer1.set_xlabel('$\it{m/z}$', color='k')
+    msLayer1.set_ylabel('Intensity', color='k')
+    plt.locator_params(axis='y', nbins=4)
+    plt.xlim(msRange)
+    plt.ylim(0)
+    plt.tight_layout()
+    userFileName = input('Enter SVG Filename for MS data: ' + userInput + ':\n')  
+    plt.savefig(r'D:\Programming\SAMM\SAMMplot\Figure 2\Figure 2 - Exports\\' + str(userFileName) + "-MS.svg", dpi=1200)
+    plt.show()
+massSpecerize(frMS)
+
+# Mobilogram
+def mobilorize(dataset):
+    cvs = plt.figure(figsize=(6, 3), dpi=600)
+    dtLayer1 = cvs.add_axes([0.1, 0.1, 0.8, 0.8])
+    dtLayer1.set_title(str(userInput) + ' Mobilogram', color='k')
+    dtLayer1.scatter(dataset['Drift Time'], dataset['Intensity'], color=str(mSun[2]), lw=1)
+    #Spline connector
+    akimaDF = pd.read_csv('D:\Programming\SAMM\SAMMplot\Figure 2\spline.csv')
+    dtLayer1.plot(akimaDF['DT'], akimaDF['Spline'], color=str(mSun[2]), lw=1)
+    # dtLayer1.fill_between(dataset['Drift Time'], 0, dataset['Intensity'], facecolor=str(mSun[2]), alpha=0.2)
+    dtLayer1.fill_between(akimaDF['DT'], 0, akimaDF['Spline'], facecolor=str(mSun[2]), alpha=0.2)
+    dtLayer1.set_xlabel('Drift Time (ms)', color='k')
+    dtLayer1.set_ylabel('Intensity', color='k')
+    # dtLayer1.yaxis.tick_right()    
+    plt.locator_params(axis='y', nbins=3)
+    plt.xlim(dataset['Drift Time'].max(), dataset['Drift Time'].min())
+    plt.ylim(0)
+    plt.tight_layout()
+    userFileName = input('Enter SVG Filename for DT data: ' + userInput + ':\n')
+    # plt.savefig(r'D:\Programming\SAMM\SAMMplot\Figure 2\Figure 2 - Exports\\' + "normalSpline-test.svg", dpi=1200)    
+    plt.savefig(r'D:\Programming\SAMM\SAMMplot\Figure 2\Figure 2 - Exports\\' + str(userFileName) + "-DT.svg", dpi=1200)
+    # plt.show()
+mobilorize(frDT)
