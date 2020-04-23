@@ -21,7 +21,6 @@ msRange = [780, 1100]
 dtRange = [30, 50]
 areaMin = 1
 dtTime = [num*((22.1)/200) for num in dtRange]  # time in ms
-dtTime
 
 # Custom colour schemes:
 def setColourScheme():
@@ -106,28 +105,30 @@ dims = data[(data['m/z'] > msRange[0]) & (data['m/z'] < msRange[1]) &
 mz, dt, area, = (dims['m/z'], dims['DT'], dims['Area'])
 
 # Scales
-# dims[r'log(Area)'] = dims['Area'].apply(lambda x: np.log(x))
+dims[r'log(Area)'] = dims['Area'].apply(lambda x: np.log(x))
 # dims[r'DT (ms)'] = data['DT'].apply(lambda x: (x*0.1105))
 
 # Sort
-dims.sort_values('Area', inplace=True)  # Problem with sorting copy
+dims.sort_values('Area', inplace=True, ascending=False)  # Problem with sorting copy
 
 #   Default MPL Settings
-colors = cycler('color', mSun)
-plt.rc('axes', edgecolor='black', axisbelow=False,
-       grid=False, prop_cycle=colors)
-font = {'family': 'arial',
-        # 'weight' : 'bold',
-        'size': 16}
-plt.rc('font', **font)  # pass in the font dict as kwargs
-plt.rc('figure', edgecolor='white')
+def mplDefaults():
+    colors = cycler('color', mSun)
+    plt.rc('axes', edgecolor='black', axisbelow=False,
+        grid=False, prop_cycle=colors)
+    font = {'family': 'arial',
+            # 'weight' : 'bold',
+            'size': 16}
+    plt.rc('font', **font)  # pass in the font dict as kwargs
+    plt.rc('figure', edgecolor='white')
+mplDefaults()
 
 # Plot scatter density (datashader MPL)
 def mplScatDen():
     x = dims['m/z']
     y = dims['DT']
-
-    fig = plt.figure(figsize=(4, 4), dpi=1200)
+    fig = plt.figure(figsize=(7.23420, 6.34827), dpi=1200)
+    # figsize = 48.58 wide x 54.57
     ax = fig.add_subplot(
         1, 1, 1, projection='scatter_density', facecolor='black')
 
@@ -137,18 +138,16 @@ def mplScatDen():
                                  cmap='magma',
                                  alpha=1
                                  )
-    # ax.set_xlim(780, 1060)
-    # ax.set_ylim(30, 50)
+    ax.set_xlim(780, 1060)
+    ax.set_ylim(30, 50)
     ax.set_title('Figure 2', color='black')
     ax.set_xlabel('$\it{m/z}$', color='black')
     ax.set_ylabel('Drift Time (ms)', color='black')
 
     # fig.colorbar(dims[r'log(Area)'], label='Signal')
     plt.tight_layout()
-    plt.show()
-
-    fig.savefig('fig2-scatter-density-mpl.svg',
-                export_path='D:\Programming\SAMM\SAMMplot\Figure 2\Figure 2 - Exports\\')
+    # plt.show()
+    plt.savefig(r'D:\Programming\SAMM\SAMMplot\Figure 2\Figure 2 - Exports\fig2-scatter-density-mpl.png')
     print('MPL Scatter Export Complete')
 # mplScatDen()
 
@@ -184,7 +183,7 @@ z2MS, z2DT = separateData(z2spec)
 
 # Mass Spectrum
 def massSpecerize(dataset):
-    cvs = plt.figure(figsize=(6, 3), dpi=1200)
+    cvs = plt.figure(figsize=(7.23420, 2.41140), dpi=1200)
     msLayer1 = cvs.add_axes([0.1, 0.1, 0.8, 0.8])
     # inset = figure1.add_axes([0.55, 0.65, 0.3, 0.2]) # Inset
     # inset.set_title('Mobilogram')
@@ -200,12 +199,12 @@ def massSpecerize(dataset):
     plt.tight_layout()
     userFileName = input('Enter SVG Filename for MS data: ' + userInput + ':\n')  
     plt.savefig(r'D:\Programming\SAMM\SAMMplot\Figure 2\Figure 2 - Exports\\' + str(userFileName) + "-MS.svg", dpi=1200)
-    plt.show()
-massSpecerize(frMS)
+    # plt.show()
+# massSpecerize(frMS)
 
 # Mobilogram
 def mobilorize(dataset):
-    cvs = plt.figure(figsize=(6, 3), dpi=600)
+    cvs = plt.figure(figsize=(6.34827, 2.11609), dpi=600)
     dtLayer1 = cvs.add_axes([0.1, 0.1, 0.8, 0.8])
     dtLayer1.set_title(str(userInput) + ' Mobilogram', color='k')
     dtLayer1.scatter(dataset['Drift Time'], dataset['Intensity'], color=str(mSun[2]), lw=1)
@@ -225,4 +224,36 @@ def mobilorize(dataset):
     # plt.savefig(r'D:\Programming\SAMM\SAMMplot\Figure 2\Figure 2 - Exports\\' + "normalSpline-test.svg", dpi=1200)    
     plt.savefig(r'D:\Programming\SAMM\SAMMplot\Figure 2\Figure 2 - Exports\\' + str(userFileName) + "-DT.svg", dpi=1200)
     # plt.show()
-mobilorize(frDT)
+# mobilorize(frDT)
+
+
+def hexbin1(dataSet):
+    dtmsMap = plt.figure(figsize=(6, 6), dpi=1200)
+    dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
+
+    dtmsLayer1.set_title('DTMS Map', color='black')
+
+    dtmsLayer1.hexbin(dataSet['m/z'], dataSet['DT'], 
+                        C=dataSet['Area'],
+                        # bins=(np.arange(len(dataSet['DT'])*0.02)),  # Change to log for quantitative view
+                        bins='log',
+                        gridsize=(250, 500),
+                        # gridsize = (500, 1000),
+                        linewidths = 0.1,
+                        # mincnt = 0,
+                        # vmin = 0,
+                        # xscale='log',
+                        # yscale='log'
+                        # alpha=0.8,
+                        # edgecolor=None
+                        cmap='inferno' #'viridis' 'inferno'
+                        )
+# plt.hexbin?
+    dtmsLayer1.set_xlabel('$\it{m/z}$', color='black')
+    dtmsLayer1.set_ylabel('Drift Time (ms)', color='black')
+    # dtmsLayer1.set(xlim=msRange, ylim=dtRange)
+    plt.tight_layout()
+    # plt.show()
+    dtmsMap.savefig(r"D:\Programming\SAMM\SAMMplot\Figure 2\New Exports\Hexbin-TEST-2-5.png")
+    print('MPL Export Complete')
+hexbin1(dims)
