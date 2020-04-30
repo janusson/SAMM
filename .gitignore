@@ -20,6 +20,7 @@ DriftScope Program Files (backup)/
 *.1dDT
 *.1dMZ
 *.1dRT
+*.code-workspace
 
 #Images
 *.jpg
