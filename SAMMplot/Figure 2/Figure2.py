@@ -1,29 +1,39 @@
-# Figure2.py
+# Figure2-test.py
 # Python 3.7.4
 # Eric Janusson
 # 150320
 # Example styles: https://seaborn.pydata.org/examples/regression_marginals.html
 # https://altair-viz.github.io/gallery/scatter_marginal_hist.html
 
+import matplotlib.pyplot as plt
+import mpl_scatter_density
+from matplotlib import rcParams
 import os
 import pandas as pd
 import numpy as np
+import matplotlib as mpl
+from cycler import cycler
+from matplotlib import pyplot as plt
+# %matplotlib inline
+
+#Figure 2 Default:
+userInput = '57-158-BC4'
+msRange = [780, 1100]
+dtRange = [30, 50]
+areaMin = 1
+dtTime = [num*((22.1)/200) for num in dtRange]  # time in ms
 
 # Custom colour schemes:
 def setColourScheme():
-    # miami sunset
     mSun = ['#003f5c', '#444e86', '#955196', '#dd5182', '#ff6e54', '#ffa600']
-    # maliwan divergent
     malDiv = '#1e394a #7175ab #ffa7ef #ff7087 #cc6200'.split(' ')
-    # maliwan palette
     malPal = '#1e394a #414471 #893e78 #c23a53 #cc6200'.split(' ')
-    # bojack gradient
-    bojackGrad = '#D04F6D #84486A #9C4670 #A75C87 #8C5D8B #7088B3 #71B2CA #8EE7F0 #B7F9F9 #A6F5F7'.split(' ')
+    bojackGrad = '#D04F6D #84486A #9C4670 #A75C87 #8C5D8B #7088B3 #71B2CA #8EE7F0 #B7F9F9 #A6F5F7'.split(
+        ' ')
     return(mSun, malDiv, malPal, bojackGrad)
-
 mSun, malDiv, malPal, bojackGrad = setColourScheme()
-# Data import functions (From TWIMExtract and APEX3D Output) customized to user input (default: ID: 57-24-RA2)
 
+# Data import functions (From TWIMExtract and APEX3D Output) customized to user input (default: ID: 57-24-RA2)
 def importSAMM2D(userInput=None):
     # Load 2D CSV files for FR, Z1, Z2
     # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): \n')
@@ -84,162 +94,171 @@ def importSAMM3D(kwargs=None):
         columns=['m/z', 'DT', 'Area', 'm/z Error', 'DT Error', 'Area Error'])
     return newApexDF
 
-# Create Dataframes
+
+# Create Dataframes for 2 and 3D data
+data = importSAMM3D('57-158-BC4')
 specData, z1spec, z2spec, fileID = importSAMM2D('57-158-BC4')
-data = importSAMM3D()
 
 # Data Processing
-# 3D
-dims = data[(data['m/z'] > 150) & (data['m/z'] < 1500) &
-            (data['DT'] > 1) & (data['DT'] < 10) 
-            # & (data['Area'] > 1)
-            ]
+dims = data[(data['m/z'] > msRange[0]) & (data['m/z'] < msRange[1]) &
+            (data['DT'] > dtRange[0]) & (data['DT'] < dtRange[1])
+            & (data['Area'] > areaMin)]
 mz, dt, area, = (dims['m/z'], dims['DT'], dims['Area'])
-ppmError, dtError, countsError = (
-    dims['m/z Error'], dims['DT Error'], dims['Area Error'])
-# 2D
-msMass, msCounts, dtTime, dtIntensity = (specData['m/z'], specData['Counts'], 
-specData['Drift Time'], specData['Intensity'])
+
 # Scales
 dims[r'log(Area)'] = dims['Area'].apply(lambda x: np.log(x))
+# dims[r'DT (ms)'] = data['DT'].apply(lambda x: (x*0.1105))
+
 # Sort
-dims.sort_values('log(Area)', inplace=True)
-dims[r'Normalized log(Area)'] = (dims['log(Area)']-dims['log(Area)'].min()
-                                 )/(dims['log(Area)'].max()-dims['log(Area)'].min())
-
-import matplotlib as mpl
-from cycler import cycler
-from matplotlib import pyplot as plt
-
-msRange = [150, 1500]
-dtRange = [1, 12]
+dims.sort_values('Area', inplace=True, ascending=False)  # Problem with sorting copy
 
 #   Default MPL Settings
-from matplotlib import rcParams
-colors = cycler('color', mSun)
-plt.rc('axes', edgecolor='black', axisbelow=False, grid=False, prop_cycle=colors)
-plt.rc('grid', c='0.5', ls='-', lw=0.1)
-plt.rc('xtick', direction='out', color='black')
-plt.rc('ytick', direction='out', color='black')
-plt.rc('patch', edgecolor='#003f5c')
-plt.rc('lines', linewidth=0.18, aa=True)
-font = {'family' : 'arial',
-        # 'weight' : 'bold',
-        'size'   : 16}
-plt.rc('font', **font)  # pass in the font dict as kwargs
-plt.rc('figure', edgecolor='white')
+def mplDefaults():
+    colors = cycler('color', mSun)
+    plt.rc('axes', edgecolor='black', axisbelow=False,
+        grid=False, prop_cycle=colors)
+    font = {'family': 'arial',
+            # 'weight' : 'bold',
+            'size': 16}
+    plt.rc('font', **font)  # pass in the font dict as kwargs
+    plt.rc('figure', edgecolor='white')
+mplDefaults()
 
-# # Mass Spectrum
-# figure1 = plt.figure(figsize=(6, 3), dpi=600)
-# msLayer1 = figure1.add_axes([0.1, 0.1, 0.8, 0.8])
-# # inset = figure1.add_axes([0.55, 0.65, 0.3, 0.2]) # Inset
-# # inset.set_title('Mobilogram')
-# # inset.plot(dtTime, dtIntensity)
-# msLayer1.set_title('Mass Spectrum', color='k')
-# msLayer1.plot(msMass, msCounts)
-# msLayer1.fill_between(msMass, 0, msCounts, facecolor=str(mSun[0]), alpha=0.1)
-# msLayer1.set_xlabel('$\it{m/z}$', color='k')
-# msLayer1.set_ylabel('Intensity', color='k')
-# plt.xlim(msRange)
-# plt.ylim(0)
-# plt.tight_layout()
-# plt.savefig("Figure2ms.png", dpi=600)
+# Plot scatter density (datashader MPL)
+def mplScatDen():
+    x = dims['m/z']
+    y = dims['DT']
+    fig = plt.figure(figsize=(7.23420, 6.34827), dpi=1200)
+    # figsize = 48.58 wide x 54.57
+    ax = fig.add_subplot(
+        1, 1, 1, projection='scatter_density', facecolor='black')
 
-# # Mobilogram
-# figure2 = plt.figure(figsize=(6, 3), dpi=600)
-# dtLayer1 = figure2.add_axes([0.1, 0.1, 0.8, 0.8])
-# dtLayer1.set_title('Mobilogram', color='k')
-# dtLayer1.plot(dtTime, dtIntensity, color=str(mSun[2]), lw=1)
-# dtLayer1.fill_between(dtTime, 0, dtIntensity, facecolor=str(mSun[2]), alpha=0.2)
-# dtLayer1.set_xlabel('Drift Time (ms)', color='k')
-# dtLayer1.set_ylabel('Intensity', color='k')
-# plt.xlim(dtRange)
-# plt.ylim(0)
-# plt.tight_layout()
-# plt.savefig("Figure2dt.png", dpi=600)
+    density = ax.scatter_density(x, y,
+                                 downres_factor=4,
+                                 c=dims[r'log(Area)'],
+                                 cmap='magma',
+                                 alpha=1
+                                 )
+    ax.set_xlim(780, 1060)
+    ax.set_ylim(30, 50)
+    ax.set_title('Figure 2', color='black')
+    ax.set_xlabel('$\it{m/z}$', color='black')
+    ax.set_ylabel('Drift Time (ms)', color='black')
 
-# 3D Plot
-# dtmsMap = plt.figure(figsize=(6, 6), dpi=600, facecolor='k', edgecolor='k')
-# dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
-# dtmsLayer1.set_title('DTMS Map', color='k')
-# dtmsLayer1.hexbin(mz, dt, 
-#                     C=area,
-#                     bins=(np.arange(len(dt))*0.2),  # Change to log for quantitative view
-#                     # bins='log'
-#                     gridsize=(250, 500),
-#                     # xscale='log',
-#                     # yscale='log'
-#                     # alpha=0.8,
-#                     # edgecolor=None
-#                     cmap='inferno' #'viridis' 'inferno'
-#                     )
-# dtmsLayer1.set_xlabel('$\it{m/z}$', color='k')
-# dtmsLayer1.set_ylabel('Drift Time (ms)', color='k')
-# dtmsLayer1.set(xlim=(msRange), ylim=(dtRange))
-# plt.tight_layout()
-# dtmsMap.savefig("Figure 2.png", dpi=600, export_path='D:\Programming\SAMM\SAMMplot\Figure 2\\')
+    # fig.colorbar(dims[r'log(Area)'], label='Signal')
+    plt.tight_layout()
+    # plt.show()
+    plt.savefig(r'D:\Programming\SAMM\SAMMplot\Figure 2\Figure 2 - Exports\fig2-scatter-density-mpl.png')
+    print('MPL Scatter Export Complete')
+# mplScatDen()
 
-# #   Datashader 3D map
-# import datashader as ds, datashader.transfer_functions as tf
+# Plotting Axes (ms)
+def mplDTMSaxes():
+    # MPL HEXBIN Plot
+    # dtmsMap = plt.figure(figsize=(8, 8), dpi=600, facecolor='k', edgecolor='k')
+    dtmsMap = plt.figure(figsize=(8, 8), dpi=1200)
+    dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
+    dtmsLayer1.set_title('Figure 2 Axes', color='black')
 
-# cvs = ds.Canvas(plot_width=600, plot_height=600)
-# agg = cvs.points(data, 'm/z', 'DT', ds.mean('Area'))
-# img = tf.shade(agg, how = 'log')
+    dtmsLayer1.scatter([1, 2], [1, 2])
 
+    dtmsLayer1.set_xlabel('$\it{m/z}$', color='black')
+    dtmsLayer1.set_ylabel('Drift Time (ms)', color='black')
+    # dtRange = ((12*(22.1)/200),(75*(22.1)/200))
+    dtmsLayer1.set(xlim=msRange, ylim=dtTime)
+    plt.tight_layout()
+    dtmsMap.savefig('D:\Programming\SAMM\SAMMplot\Figure 2\Figure 2 - Exports\Figure2-axes.svg')
+    print('Axes Export Complete')
+# mplDTMSaxes()
 
+#2D Plotting
+def separateData(dataset):
+    msData = dataset.drop(['Drift Time', 'Intensity'], axis=1)
+    dtData = dataset.drop(['m/z', 'Counts'], axis=1)
+    msData = msData[(msData['m/z'] > msRange[0]) & (msData['m/z'] < msRange[1])]
+    dtData = dtData[ (dataset['Drift Time'] > 3.315) & (dataset['Drift Time'] < 5.525)]
+    return msData, dtData
+frMS, frDT = separateData(specData)
+z1MS, z1DT = separateData(z1spec)
+z2MS, z2DT = separateData(z2spec)
 
+# Mass Spectrum
+def massSpecerize(dataset):
+    cvs = plt.figure(figsize=(7.23420, 2.41140), dpi=1200)
+    msLayer1 = cvs.add_axes([0.1, 0.1, 0.8, 0.8])
+    # inset = figure1.add_axes([0.55, 0.65, 0.3, 0.2]) # Inset
+    # inset.set_title('Mobilogram')
+    # inset.plot(dtTime, dtIntensity)
+    msLayer1.set_title(str(userInput) + ' Mass Spectrum', color='k')
+    msLayer1.plot(dataset['m/z'], dataset['Counts'], lw=0.3)
+    msLayer1.fill_between(dataset['m/z'], 0, dataset['Counts'], facecolor=str(mSun[0]), alpha=0.1)
+    msLayer1.set_xlabel('$\it{m/z}$', color='k')
+    msLayer1.set_ylabel('Intensity', color='k')
+    plt.locator_params(axis='y', nbins=4)
+    plt.xlim(msRange)
+    plt.ylim(0)
+    plt.tight_layout()
+    userFileName = input('Enter SVG Filename for MS data: ' + userInput + ':\n')  
+    plt.savefig(r'D:\Programming\SAMM\SAMMplot\Figure 2\Figure 2 - Exports\\' + str(userFileName) + "-MS.svg", dpi=1200)
+    # plt.show()
+# massSpecerize(frMS)
 
+# Mobilogram
+def mobilorize(dataset):
+    cvs = plt.figure(figsize=(6.34827, 2.11609), dpi=600)
+    dtLayer1 = cvs.add_axes([0.1, 0.1, 0.8, 0.8])
+    dtLayer1.set_title(str(userInput) + ' Mobilogram', color='k')
+    dtLayer1.scatter(dataset['Drift Time'], dataset['Intensity'], color=str(mSun[2]), lw=1)
+    #Spline connector
+    akimaDF = pd.read_csv('D:\Programming\SAMM\SAMMplot\Figure 2\spline.csv')
+    dtLayer1.plot(akimaDF['DT'], akimaDF['Spline'], color=str(mSun[2]), lw=1)
+    # dtLayer1.fill_between(dataset['Drift Time'], 0, dataset['Intensity'], facecolor=str(mSun[2]), alpha=0.2)
+    dtLayer1.fill_between(akimaDF['DT'], 0, akimaDF['Spline'], facecolor=str(mSun[2]), alpha=0.2)
+    dtLayer1.set_xlabel('Drift Time (ms)', color='k')
+    dtLayer1.set_ylabel('Intensity', color='k')
+    # dtLayer1.yaxis.tick_right()    
+    plt.locator_params(axis='y', nbins=3)
+    plt.xlim(dataset['Drift Time'].max(), dataset['Drift Time'].min())
+    plt.ylim(0)
+    plt.tight_layout()
+    userFileName = input('Enter SVG Filename for DT data: ' + userInput + ':\n')
+    # plt.savefig(r'D:\Programming\SAMM\SAMMplot\Figure 2\Figure 2 - Exports\\' + "normalSpline-test.svg", dpi=1200)    
+    plt.savefig(r'D:\Programming\SAMM\SAMMplot\Figure 2\Figure 2 - Exports\\' + str(userFileName) + "-DT.svg", dpi=1200)
+    # plt.show()
+# mobilorize(frDT)
 
+def hexbin1(dataSet):
+    from colorcet import bmw, bkr, bgyw, bkr, bgy, kbc, bmw, bmy, kb, bkr, CET_CBL2, isolum, CET_L8
+    from matplotlib.cm import viridis, plasma, magma, inferno, cividis
 
+    dataSet[r'DT'] = dims['DT'].apply(lambda x: x*22.105125/200)
+    dtmsMap = plt.figure(figsize=(6, 6), dpi=1200)
+    dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
 
+    dtmsLayer1.set_title('DTMS Map', color='black')
 
+    dtmsLayer1.hexbin(dataSet['m/z'], dataSet['DT'], 
+                        C=dataSet['Area'],
+                        # bins=(np.arange(len(dataSet['DT'])*0.02)),  # Change to log for quantitative view
+                        bins='log',
+                        gridsize=(300, 500),
+                        # gridsize = (500, 1000),
+                        linewidths = 1,
+                        # mincnt = 0,   ### PLAY WITH MIN COUNT AND VMIN TO ADJUST
+                        # vmin = 0,
+                        # xscale='log',
+                        # yscale='log'
+                        # alpha=0.8,
+                        # edgecolor=None
+                        cmap='cet_CET_L8' #'viridis' 'inferno'
+                        )
 
+    dtmsLayer1.set_xlabel('$\it{m/z}$', color='black')
+    dtmsLayer1.set_ylabel('Drift Time (ms)', color='black')
+    # dtmsLayer1.set(xlim=msRange, ylim=dtRange)
+    plt.tight_layout()
+    # plt.show()
+    dtmsMap.savefig(r"D:\Programming\SAMM\SAMMplot\Figure 2\New Exports\Figure2-Hexbin-CET-L8.svg")
+    print('Hexbin Export Complete')
 
-
-
-
-
-
-
-
-
-###
-# def scatter_hist(x, y, ax, ax_histx, ax_histy):
-#     # no labels
-#     ax_histx.tick_params(axis="x", labelbottom=False)
-#     ax_histy.tick_params(axis="y", labelleft=False)
-
-#     # the scatter plot:
-#     ax.scatter(x, y)
-
-#     # now determine nice limits by hand:
-#     binwidth = 0.25
-#     xymax = max(np.max(np.abs(x)), np.max(np.abs(y)))
-#     lim = (int(xymax/binwidth) + 1) * binwidth
-
-#     bins = np.arange(-lim, lim + binwidth, binwidth)
-#     ax_histx.hist(x, bins=bins)
-#     ax_histy.hist(y, bins=bins, orientation='horizontal')
-
-# # definitions for the axes
-# left, width = 0.1, 0.65
-# bottom, height = 0.1, 0.65
-# spacing = 0.005
-
-# rect_scatter = [left, bottom, width, height]
-# rect_histx = [left, bottom + height + spacing, width, 0.2]
-# rect_histy = [left + width + spacing, bottom, 0.2, height]
-
-# # start with a square Figure
-# fig = plt.figure(figsize=(8, 8))
-
-# ax = fig.add_axes(rect_scatter)
-# ax_histx = fig.add_axes(rect_histx, sharex=ax)
-# ax_histy = fig.add_axes(rect_histy, sharey=ax)
-
-# # use the previously defined function
-# scatter_hist(mz, dt, ax, ax_histx, ax_histy)
-
-# plt.show()
-
-###
+hexbin1(dims)

@@ -24,9 +24,14 @@ DriftScope Program Files (backup)/
 #Images
 *.jpg
 *.png
+*.svg
+*.tiff
+*.ai
+*.eps
 
 #Excel
 *.xlsx
+*.xls
 *.csv
 
 #Misc Files

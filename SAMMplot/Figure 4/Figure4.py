@@ -24,8 +24,6 @@ def setColourScheme():
 mSun, malDiv, malPal, bojackGrad = setColourScheme()
 
 ## Data Import
-# userInput = input('Input path of CSV File: ')
-# data = pd.read_csv(userInput)
 data = pd.read_csv(
     r'D:\Programming\SAMM\SAMMplot\Figure 4\EJ3-57-SAMM2trends.csv', delimiter=',', header='infer')
 data.reset_index()

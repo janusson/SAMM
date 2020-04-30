@@ -200,8 +200,7 @@ def dsMap():
     import datashader as ds, datashader.transfer_functions as tf
     import holoviews as hv
     # from holoviews import opts
-    from colorcet import bmw, bkr, bgyw, bkr, bgy, kbc, bmw, bmy, kb, bkr, CET_CBL2
-    # from colorcet import bmw, isolum, 
+    from colorcet import bmw, bkr, bgyw, bkr, bgy, kbc, bmw, bmy, kb, bkr, CET_CBL2, isolum
     from matplotlib.cm import viridis, plasma, magma, inferno, cividis
     from functools import partial
     from datashader.utils import export_image
