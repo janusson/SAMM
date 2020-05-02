@@ -1,4 +1,4 @@
-# Figure2-test.py
+# Figure3.py
 # Python 3.7.4
 # Eric Janusson
 # 150320
@@ -10,11 +10,9 @@ import pandas as pd
 import numpy as np
 import matplotlib as mpl
 from cycler import cycler
-from matplotlib import pyplot as plt
-# %matplotlib inline
 
 #Figure Defaults:
-userInput = '57-176-BD2'
+userInput = '57-176-BD2'    # Figure 3 uses 57-176-BD2 data
 msRange = [150, 3000]
 dtRange = [0, 200]
 areaMin = 1
@@ -29,11 +27,11 @@ def setColourScheme():
     return(mSun, malDiv, malPal, bojackGrad)
 mSun, malDiv, malPal, bojackGrad = setColourScheme()
 
-def importSAMM3D(fileID):
+def importSAMM3D(file3D):
     # Load Apex3D CSV files for given experiment
     # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): ') #TEST
     # userInputApex = input('Example: 57-24-RA2') #TEST
-    userInputApex = str(fileID)
+    userInputApex = str(file3D)
 
     apexPath = r'D:\\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\SAMM3D Extracts\APEX Output(3-57)'
     apexMS = str(apexPath + r'\Full Range\MS\EJ3-' + userInputApex +
@@ -68,9 +66,10 @@ def mplDefaults():
     plt.rc('figure', edgecolor='white')
 mplDefaults()
 
-# Data processing
+# Create Dataframes
 data = importSAMM3D(userInput)# Create Dataframes for 3D data
 
+# Data Processing
 dims = data[(data['m/z'] > msRange[0]) & (data['m/z'] < msRange[1]) &
         (data['DT'] > dtRange[0]) & (data['DT'] < dtRange[1])
         & (data['Area'] > areaMin)]
@@ -78,6 +77,10 @@ dims = data[(data['m/z'] > msRange[0]) & (data['m/z'] < msRange[1]) &
 # Scales
 dims[r'log(Area)'] = dims['Area'].apply(lambda x: np.log(x))
 # dims[r'DT (ms)'] = data['DT'].apply(lambda x: (x*0.1105))
+
+# Sort
+# Potential problem with sorting copy
+dims.sort_values('Area', inplace=True, ascending=False)
 
 #Plotting
 # Plot scatter density (datashader MPL)
@@ -140,20 +143,14 @@ def hexbin1(dataSet):
 
     dtmsLayer1.hexbin(dataSet['m/z'], dataSet['DT'], 
                         C=dataSet['log(Area)'],
-                        # reduce_C_function = np.max('Area'),
-                        # bins=(np.arange(len(dataSet['DT'])*0.02)),  # Change to log for quantitative view
+                        # bins=(np.arange(len(dataSet['DT'])*0.02))
                         bins='log',
-                        # bins = 4,
-                        # bins = 10,
                         gridsize=(450, 450),
                         linewidths = 2.2, # 2.2
-                        # marginals=True,
                         mincnt = 5,   ### Minimum log intensity ~5
                         alpha=0.7, # 0.5
                         edgecolor='face',
-                        # capstyle='projecting',
                         # hatch = 'O' #{'/', '\', '|', '-', '+', 'x', 'o', 'O', '.', '*'}
-                        # cmap='cet_CET_CBL2' #'viridis' 'inferno'
                         cmap = 'cet_bgyw' #cet_bmw or bgyw
                         )
     dtmsLayer1.set_title('DTMS Map', color='black')    #Labels
@@ -164,4 +161,9 @@ def hexbin1(dataSet):
     dtmsMap.savefig(r"D:\Programming\SAMM\SAMMplot\Figure 3\Figure3-Hexbin-" + userInput + r"-bgyw.png")
     dtmsMap.savefig(r"D:\Programming\SAMM\SAMMplot\Figure 3\Figure3-Hexbin-" + userInput + r"-bgyw.svg")
     print('Hexbin Export of ' + userInput + ' Data Complete')
+
+# Export Plots:
 hexbin1(dims)
+
+cwd = str(os.getcwd())
+print(r'Export Complete to: *-_-_-_-* ' + cwd + ' *-_-_-_-*')
