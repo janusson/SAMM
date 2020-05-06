@@ -132,7 +132,8 @@ def plotMS(scatterData, scatterData2, titleCharge):
     plt.tight_layout()
 
     # plt.gcf().subplots_adjust(bottom=0.15, right = 0.3)
-    plt.savefig("Figure5.png", dpi=600)
+    plt.savefig("D:\Programming\SAMM\SAMMplot\Figure 5\Figure5.png", dpi=600)
+    print('Figure exported as: D:\Programming\SAMM\SAMMplot\Figure 5\Figure5.png')
 
     # plt.savefig("Figure5-MS-" + charge + "-" + fileID + ' and ' + fileId2 + ".png", dpi=600)
 
