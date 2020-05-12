@@ -93,16 +93,19 @@ fig4Chart = alt.Chart(source).mark_point().encode(
     alt.X('Z1MS-LWI', type='quantitative', title='Z1MS-LWI'),
     alt.Y('Z1DT-LWI', type='quantitative', aggregate='average', title='Z1DT-LWI'),
     color='Solvent:N',
-    # size='Condition:O',
-    fill='Condition:O',
+    size='Condition:O',
+    # fill='Solvent:N',
     # color='Solvent:O', # solvent as an Ordinal dataset
     tooltip='ID',
 ).interactive()
 
+# size based on condition, condition list in init files, resize text, legend
+
+
+
+
 print(f'Saving {experiment} cluster mass vs. shape plot...')
-fig4Chart.save(r'D:/Programming/SAMM/SAMMplot/Figure 4/Fig4.html')
-
-
+fig4Chart.save(r'D:/Programming/SAMM/SAMMplot/Figure 4/Figure 4.html')
 
 print('\n\aEnd o7\a')
 ### END OF WORKING STATE
