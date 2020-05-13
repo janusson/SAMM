@@ -256,7 +256,7 @@ source = data
 # Heatmap: https://altair-viz.github.io/gallery/simple_heatmap.html
 # https://altair-viz.github.io/gallery/scatter_linked_brush.html#gallery-scatter-linked-brush
 
-Chart.save(r'D:/Programming/SAMM/SAMMplot/Figure 4/Figure 4.html')
+    color='Area:Q',
 # file:///D:/Programming/SAMM/SAMMplot/Figure%204/Figure%204.html
 
 print('Altair Export Complete')
