@@ -74,60 +74,70 @@ z2Scat2 = z2Scat2[
 
 
 ## Plotting
-import matplotlib as mpl
-from cycler import cycler
-from matplotlib import pyplot as plt
+# import matplotlib as mpl
+# from cycler import cycler
+# from matplotlib import pyplot as plt
 
-msRange = (300, 1100)
+# msRange = (300, 1100)
 
-#   Default MPL Settings
-colors = cycler('color', mSun)
+# #   Default MPL Settings
+# colors = cycler('color', mSun)
 
-from matplotlib import rcParams
-plt.rc('axes', edgecolor='gray', axisbelow=False, grid=False, prop_cycle=colors)
-plt.rc('grid', c='0.5', ls='-', lw=0.1)
-plt.rc('xtick', direction='out', color='gray')
-plt.rc('ytick', direction='out', color='gray')
-plt.rc('patch', edgecolor='#003f5c')
-plt.rc('lines', linewidth=0.18, aa=True)
-font = {'family' : 'arial',
-        'weight' : 'bold',
-        'size'   : 16}
-plt.rc('font', **font)  # pass in the font dict as kwargs
+# from matplotlib import rcParams
+# plt.rc('axes', edgecolor='gray', axisbelow=False, grid=False, prop_cycle=colors)
+# plt.rc('grid', c='0.5', ls='-', lw=0.1)
+# plt.rc('xtick', direction='out', color='gray')
+# plt.rc('ytick', direction='out', color='gray')
+# plt.rc('patch', edgecolor='#003f5c')
+# plt.rc('lines', linewidth=0.18, aa=True)
+# font = {'family' : 'arial',
+#         'weight' : 'bold',
+#         'size'   : 16}
+# plt.rc('font', **font)  # pass in the font dict as kwargs
 
-def plotMS(scatterData, scatterData2, titleCharge):
-    fig, ax = plt.subplots(nrows=2, ncols=1, sharex=True, sharey=False, figsize=(8,8), dpi=600)
-    charge = titleCharge
+# def plotMS(scatterData, scatterData2, titleCharge):
+#     fig, ax = plt.subplots(nrows=2, ncols=1, sharex=True, sharey=False, figsize=(8,8), dpi=600)
+#     charge = titleCharge
 
-    ax[0].plot(scatterData['m/z'], scatterData['Counts'], color=mSun[0])
-    ax[0].fill_between(scatterData['m/z'], 0, scatterData['Counts'], facecolor=mSun[0])
-    ax[0].set_title('Figure 5')
-    ax[0].set_ylabel('Intensity (1e5)', color='gray')
-    ax[0].set_title(charge + ' Mass Spectrum of ' + fileID, color='gray')
-    ax[0].set_ylim(bottom=0)
+#     ax[0].plot(scatterData['m/z'], scatterData['Counts'], color=mSun[0])
+#     ax[0].fill_between(scatterData['m/z'], 0, scatterData['Counts'], facecolor=mSun[0])
+#     ax[0].set_title('Figure 5')
+#     ax[0].set_ylabel('Intensity (1e5)', color='gray')
+#     ax[0].set_title(charge + ' Mass Spectrum of ' + fileID, color='gray')
+#     ax[0].set_ylim(bottom=0)
 
-    ax[1].plot(scatterData2['m/z'], scatterData2['Counts'], color=mSun[3])
-    ax[1].fill_between(scatterData2['m/z'], 0, scatterData2['Counts'], facecolor=mSun[3])
-    ax[1].set_title(charge + ' Mass Spectrum of ' + fileID2, color='gray')
-    ax[1].set_xlabel('$\it{m/z}$', color='gray')
-    ax[1].set_ylabel('Intensity (1e5)', color='gray')
-    ax[1].invert_yaxis()
-    ax[1].set_ylim(top=0)
+#     ax[1].plot(scatterData2['m/z'], scatterData2['Counts'], color=mSun[3])
+#     ax[1].fill_between(scatterData2['m/z'], 0, scatterData2['Counts'], facecolor=mSun[3])
+#     ax[1].set_title(charge + ' Mass Spectrum of ' + fileID2, color='gray')
+#     ax[1].set_xlabel('$\it{m/z}$', color='gray')
+#     ax[1].set_ylabel('Intensity (1e5)', color='gray')
+#     ax[1].invert_yaxis()
+#     ax[1].set_ylim(top=0)
 
-    plt.xlim(msRange)
+#     plt.xlim(msRange)
 
-    ax[0].legend([None, str(fileID)])
-    ax[1].legend([None, str(fileID2)])
+#     ax[0].legend([None, str(fileID)])
+#     ax[1].legend([None, str(fileID2)])
 
-    ax[0].ticklabel_format(axis='y', style='sci', scilimits=(0, 0))
-    ax[1].ticklabel_format(axis='y', style='sci', scilimits=(0, 0))
-    plt.tight_layout()
+#     ax[0].ticklabel_format(axis='y', style='sci', scilimits=(0, 0))
+#     ax[1].ticklabel_format(axis='y', style='sci', scilimits=(0, 0))
+#     plt.tight_layout()
 
-    # plt.gcf().subplots_adjust(bottom=0.15, right = 0.3)
-    plt.savefig("D:\Programming\SAMM\SAMMplot\Figure 5\Figure5.png", dpi=600)
-    print('Figure exported as: D:\Programming\SAMM\SAMMplot\Figure 5\Figure5.png')
+#     # plt.gcf().subplots_adjust(bottom=0.15, right = 0.3)
+#     plt.savefig("D:\Programming\SAMM\SAMMplot\Figure 5\Figure5.png", dpi=600)
+#     print('Figure exported as: D:\Programming\SAMM\SAMMplot\Figure 5\Figure5.png')
 
-    # plt.savefig("Figure5-MS-" + charge + "-" + fileID + ' and ' + fileId2 + ".png", dpi=600)
+#     # plt.savefig("Figure5-MS-" + charge + "-" + fileID + ' and ' + fileId2 + ".png", dpi=600)
+# plotMS(z2Scatter, z2Scat2, 'Z2')
 
+import altair as alt
+x = scatterData['m/z']
+y = scatterData['Counts']
+source = scatterData
+fig5Chart = alt.Chart(source).mark_line().encode(
+    x='x',
+    y='y'
+)
 
-plotMS(z2Scatter, z2Scat2, 'Z2')
+print(f'Saving {experiment} plot...')
+fig5Chart.save(r'D:/Programming/SAMM/SAMMplot/Figure 5/Figure 5.html')

@@ -81,6 +81,8 @@ organic = data[~data.Solvent.str.contains('2O')]
 deuterated = data[data.Solvent.str.contains('D2O')]
 # [data[data.Solvent.str.contains(i)] for i in solvents]
 
+data.to_csv('Figure4-ProcessedSolventData(3-58).csv', index=False, encoding='UTF-8')
+
 
 # Altair Bubble Scatter
 print(f'Plotting {experiment} cluster mass vs. shape...')
@@ -94,20 +96,75 @@ fig4Chart = alt.Chart(source).mark_point().encode(
     alt.Y('Z1DT-LWI', type='quantitative', aggregate='average', title='Z1DT-LWI'),
     color='Solvent:N',
     size='Condition:O',
+    # shape='Solvent:N',
     # fill='Solvent:N',
     # color='Solvent:O', # solvent as an Ordinal dataset
     tooltip='ID',
-).interactive()
+)
+
+fig4Chart.configure_axis(labelFontSize=16, titleFontSize=16)
+
+# ).interactive()
 
 # size based on condition, condition list in init files, resize text, legend
-
-
-
 
 print(f'Saving {experiment} cluster mass vs. shape plot...')
 fig4Chart.save(r'D:/Programming/SAMM/SAMMplot/Figure 4/Figure 4.html')
 
 print('\n\aEnd o7\a')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### END OF WORKING STATE
 
     #   Default MPL/Seaborn Settings
