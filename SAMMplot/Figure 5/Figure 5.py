@@ -72,14 +72,6 @@ z2Scat2 = z2Scat2[
             & (z2Scat2['m/z'] < 1100)
             ]
 
-# Normalize Data
-# from sklearn import preprocessing as pp
-# z2Scatter.drop(columns=['Drift Time', 'Intensity'], inplace=True)
-# z2Scat2.drop(columns=['Drift Time', 'Intensity'], inplace=True)
-# z2Scatter['Normalized Intensity'] = pd.DataFrame(pp.maxabs_scale(z2Scatter['Counts']))
-# z2Scat2['Normalized Intensity'] = pd.DataFrame(pp.maxabs_scale(z2Scat2['Counts']))
-# z2Scatter.drop(columns='Counts', inplace=True)
-# z2Scatter.fillna(0)
 
 ## Plotting
 import matplotlib as mpl
@@ -132,7 +124,8 @@ def plotMS(scatterData, scatterData2, titleCharge):
     plt.tight_layout()
 
     # plt.gcf().subplots_adjust(bottom=0.15, right = 0.3)
-    plt.savefig("Figure5.png", dpi=600)
+    plt.savefig("D:\Programming\SAMM\SAMMplot\Figure 5\Figure5.png", dpi=600)
+    print('Figure exported as: D:\Programming\SAMM\SAMMplot\Figure 5\Figure5.png')
 
     # plt.savefig("Figure5-MS-" + charge + "-" + fileID + ' and ' + fileId2 + ".png", dpi=600)
 
