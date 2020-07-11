@@ -109,7 +109,7 @@ data = importSAMM3D(userInput)
 # 3D Dimensions
 dims = data[(data['m/z'] > msRange[0]) & (data['m/z'] < msRange[1]) #Set import scales
             & (data['DT'] > dtRange[0])
-            & (data['DT'] < dtRange[1]) 
+            & (data['DT'] < dtRange[1])
             & (data['Area'] > areaMin)]
 # 3D Scales
 dims[r'log(Area)'] = dims['Area'].apply(lambda x: np.log(x))
@@ -121,7 +121,7 @@ dims[r'Normalized log(Area)'] = (dims['log(Area)']-dims['log(Area)'].min()
 mz, dt, area, = (dims['m/z'], dims['DT'], dims['Area'])
 ppmError, dtError, countsError = (dims['m/z Error'], dims['DT Error'], dims['Area Error'])
 # 2D Variables
-msMass, msCounts, dtTime, dtIntensity = (specData['m/z'], specData['Counts'], 
+msMass, msCounts, dtTime, dtIntensity = (specData['m/z'], specData['Counts'],
 specData['Drift Time'], specData['Intensity'])
 
 ## Plotting
@@ -132,7 +132,7 @@ def mplDTMS():
     dtmsLayer1 = dtmsMap.add_axes([0.1, 0.1, 0.8, 0.8], facecolor='k')
     dtmsLayer1.set_title('DTMS Map', color='black')
 
-    dtmsLayer1.hexbin(mz, dt, 
+    dtmsLayer1.hexbin(mz, dt,
                         C=area,
                         bins=(np.arange(len(dt))*0.5),  # Change to log for quantitative view
                         # bins='log'
@@ -143,7 +143,7 @@ def mplDTMS():
                         # edgecolor=None
                         cmap='inferno' #'viridis' 'inferno'
                         )
-    
+
     dtmsLayer1.set_xlabel('$\it{m/z}$', color='black')
     dtmsLayer1.set_ylabel('Drift Time (ms)', color='black')
     # dtmsLayer1.set(xlim=[150, 3000], ylim=[0, 200]) # No limit
@@ -161,9 +161,9 @@ def dsMap():
     from functools import partial
     from datashader.utils import export_image
     from IPython.core.display import HTML, display
-    
+
     # Create Canvas
-    cvs = ds.Canvas(plot_width=1000//2, plot_height=1000//2, 
+    cvs = ds.Canvas(plot_width=1000//2, plot_height=1000//2,
                     x_range=(150, 1500), y_range=(12, 75))
                     # x_axis_type='linear', y_axis_type='linear'
 
@@ -201,7 +201,7 @@ def mplDTMS2():
 
     dtmsLayer1.set_title('DTMS Map', color='black')
 
-    dtmsLayer1.hexbin(data['m/z'], data['DT'], 
+    dtmsLayer1.hexbin(data['m/z'], data['DT'],
                         C=data['Area'],
                         bins=(np.arange(len(dt))*0.02),  # Change to log for quantitative view
                         # bins='log',
@@ -212,7 +212,7 @@ def mplDTMS2():
                         # edgecolor=None
                         cmap='inferno' #'viridis' 'inferno'
                         )
-    
+
     dtmsLayer1.set_xlabel('$\it{m/z}$', color='black')
     dtmsLayer1.set_ylabel('Drift Time (ms)', color='black')
     # dtmsLayer1.set(xlim=[150, 3000], ylim=[0, 200]) # No limit
@@ -230,7 +230,7 @@ def mplDTMSaxes():
     dtmsLayer1.set_title('DTMS Map', color='black')
 
     dtmsLayer1.hexbin([1,2], [1,2], gridsize=(250, 500))
-    
+
     dtmsLayer1.set_xlabel('$\it{m/z}$', color='black')
     dtmsLayer1.set_ylabel('Drift Time (ms)', color='black')
     dtRange = ((12*(22.1)/200),(75*(22.1)/200))

@@ -254,7 +254,6 @@ import altair as alt
 # Heatmap: https://altair-viz.github.io/gallery/simple_heatmap.html
 # https://altair-viz.github.io/gallery/scatter_linked_brush.html#gallery-scatter-linked-brush
 
-
 # Convert this grid to columnar data expected by Altair
 source = data
 chart = alt.Chart(source).mark_point().encode(
@@ -271,23 +270,6 @@ chart.save(r'D:/Programming/SAMM/SAMMplot/Figure 1/Figure 1 - Altair.html')
 # file:///D:/Programming/SAMM/SAMMplot/Figure%204/Figure%204.html
 
 print('Altair Export Complete')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 cwd = str(os.getcwd())
 print(r'Complete. . . CWD: *-_-_-_-* ' + cwd + ' *-_-_-_-*')
