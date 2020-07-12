@@ -47,7 +47,7 @@ def importSAMM3D(file3D):
     apexPath = r'D:\\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\SAMM3D Extracts\APEX Output(3-57)'
     apexMS = str(apexPath + r'\Full Range\MS\EJ3-' + userInputApex +
                  r'-Sampling-2\MZ_EJ3-' + r'-Sampling-2_Apex3DIons.csv')
-    apexMS = str('D:\\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\SAMM3D Extracts\APEX Output(3-57)\EJ3-' +
+    apexMS = str(r'D:\\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\SAMM3D Extracts\APEX Output(3-57)\EJ3-' +
                  userInputApex + '-Sampling-2_Apex3DIons.csv')
     apexDF = pd.read_csv(apexMS)
     x, y, z, = (
