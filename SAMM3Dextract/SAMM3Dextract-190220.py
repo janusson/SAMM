@@ -15,12 +15,13 @@ from pathlib import Path
 apexPath = r"C:\DriftScope\lib\Apex3D64.exe"     #NOTE Changed to backslash from forward slash
 apexLogPath = r"C:\DriftScope\log\_Apex3DLog.txt"        #NOTE Changed to backslash from forward slash
 
-#       Check DriftScope directory for required files 
+#       Check DriftScope directory for required files
 def checkFiles():
+
         if (os.path.isfile(apexPath) and os.path.isfile(apexLogPath)):
                 pass
         else:
-                input("Log and Apex3D files not present. Check DriftScope installation is present at C:\DriftScope. Press Enter to Exit")
+                input(r"Log and Apex3D files not present. Check DriftScope installation is present at C:\DriftScope. Press Enter to Exit")
                 sys.exit("Exiting...")
 checkFiles()
 
