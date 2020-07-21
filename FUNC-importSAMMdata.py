@@ -1,15 +1,18 @@
-#FUNC-importSAMMdata.py
+# FUNC-importSAMMdata.py
+# Functions for processing TWIMS CSV datafiles * under construction *
+
 import os
 import pandas as pd
 
-userInput = '57-158-BC4' # enter file ID here
+# Data import functions (From TWIMExtract and APEX3D Output) customized to input (default: ID: 57-24-RA2)
 
-# Data import functions (From TWIMExtract and APEX3D Output) customized to user input (default: ID: 57-24-RA2)
 def importSAMM2D(file2D):
-    # Load 2D CSV files for FR, Z1, Z2
+    # Process 2D CSV files for FR, Z1, Z2
+
     # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): \n')
     # userInput = input('Example: 57-158-BC4')
     # userInput = '57-158-BC4'
+
     basePath = r'D:\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\Experimental Data\3-57-SAMM2\2DExtract(3-57-2)'
     frMS = str(basePath + r'\Full Range\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
                userInput + r'-Sampling-2_fn-1_#FullRange-POMSolv-Rangefile.txt_raw.csv')
@@ -39,7 +42,8 @@ def importSAMM2D(file2D):
     return frScatter, z1Scatter, z2Scatter, userInput
 
 def importSAMM3D(file3D):
-    # Load Apex3D CSV files for given experiment
+    # Process Apex3D CSV files for given experiment
+
     # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): ') #TEST
     # userInputApex = input('Example: 57-24-RA2') #TEST
     userInputApex = str(file3D)
@@ -64,6 +68,14 @@ def importSAMM3D(file3D):
         zip(x, y, z, xError, yError, zError),
         columns=['m/z', 'DT', 'Area', 'm/z Error', 'DT Error', 'Area Error'])
     return newApexDF
+
+
+# Define experiment ID
+
+# userInput = input('Enter Sample ID in format "##-###-AB#" (default:57-158-BC4)')
+userInput = '57-158-BC4' # enter file ID here, or use above user input method
+
+# run process
 
 importSAMM2D(userInput)
 importSAMM3D(userInput)
