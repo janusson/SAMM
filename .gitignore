@@ -21,6 +21,7 @@ DriftScope Program Files (backup)/
 *.1dMZ
 *.1dRT
 *.code-workspace
+*.html
 
 #Images
 *.jpg
