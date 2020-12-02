@@ -21,6 +21,7 @@ targets_csv = r'D:\2-SAMM\SAMM-Self-Assembly-Mobility-Mapping - Paper Folder\Pro
 # mz_tolerance = error tolerance for m/z value, in either absolute (default), can set as percentage
 # mob_tolerance = error tolerance for mobility, in percentage 
 # mz_units set to 'abs' as default for absolute mz_tolerance. If not 'abs', mz_tolerance is read as decimal fraction)
+
 mz_tolerance, mob_tolerance = 1, 0.05
 
 def read_data_csv(csv_file, delimitchar=',', headers=True):

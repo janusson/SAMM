@@ -41,7 +41,7 @@ def getDataDir():
     # print("Enter DATA directory with Waters .RAW experiment files below:")
     # expanduser to remove user account conflicts
     userData = os.path.expanduser(
-        input('Paste database directory containing Waters .raw files:'))
+        input('Paste database directory containing Waters .raw experiment files:'))
     if os.path.isdir(userData):
         return userData
     else:
@@ -99,7 +99,7 @@ def makeOutputDir():
 
 outputDir = makeOutputDir()
 
-# chexk makeoutput dir function ^^^
+# check makeoutput dir function ^^^
 
 
 #       Define batch strings and arguments for Apex3D
