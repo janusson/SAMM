@@ -4,7 +4,10 @@
 # Eric Janusson
 # 150320
 import pandas as pd
-import numpy as np
+import matplotlib as mpl
+from matplotlib import rcParams
+from matplotlib import pyplot as plt
+
 # Custom colour schemes:
 def setColourScheme():
     # miami sunset
@@ -16,28 +19,35 @@ def setColourScheme():
     # bojack gradient
     bojackGrad = '#D04F6D #84486A #9C4670 #A75C87 #8C5D8B #7088B3 #71B2CA #8EE7F0 #B7F9F9 #A6F5F7'.split(
         ' ')
-    return(mSun, malDiv, malPal, bojackGrad)
-mSun, malDiv, malPal, bojackGrad = setColourScheme()
 
-df = pd.read_csv('D:\Programming\SAMM\SAMMplot\Figure 6\Data\Figure 6 Data(EJ3-60-90-BA1).csv') 
-df.head()
+    # MPL Settings
+    colors = mpl.cycler('color', mSun)  # colors = cycler('color', mSun)
+    plt.rc('axes', edgecolor='gray', axisbelow=False,
+           grid=False, prop_cycle=colors)
+    plt.rc('grid', c='0.5', ls='-', lw=0.1)
+    plt.rc('xtick', direction='out', color='gray')
+    plt.rc('ytick', direction='out', color='gray')
+    plt.rc('patch', edgecolor='#003f5c')
+    plt.rc('lines', linewidth=0.18, aa=True)
+    font = {'family': 'arial',
+            'weight': 'bold',
+            'size': 16}
+    plt.rc('font', **font)  # pass in the font dict as kwargs
 
-# MPL Settings
-colors = cycler('color', mSun)
-from matplotlib import rcParams
-plt.rc('axes', edgecolor='gray', axisbelow=False, grid=False, prop_cycle=colors)
-plt.rc('grid', c='0.5', ls='-', lw=0.1)
-plt.rc('xtick', direction='out', color='gray')
-plt.rc('ytick', direction='out', color='gray')
-plt.rc('patch', edgecolor='#003f5c')
-plt.rc('lines', linewidth=0.18, aa=True)
-font = {'family' : 'arial',
-        'weight' : 'bold',
-        'size'   : 16}
-plt.rc('font', **font)  # pass in the font dict as kwargs
+    return(mSun, malDiv, malPal, bojackGrad, colors)
 
-from matplotlib import pyplot as plt
+mSun, malDiv, malPal, bojackGrad, colors = setColourScheme()
+
+df = pd.read_csv(
+    r'D:\Programming\SAMM\SAMMplot\Figure 6\Data\Figure 6 Data(EJ3-60-90-BA1).csv')
+print(df.head())
+print('\n Plotting...')
+
 plt.scatter(df['mz'], df['DT'])
+
+# Replot in Altair:
+### Add regression lines, local trends/deviations to plot
+
 
 
 ## Regression analysis

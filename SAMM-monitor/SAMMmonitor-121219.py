@@ -1,15 +1,32 @@
+<<<<<<< HEAD
+"""
+Filename: SAMMmonitor-121219.py
+=======
 """ Filename: SAMMmonitor-121219.py
+>>>>>>> 2d4440d8e8bb37cf9c25746e98a38d86e5d9be04
 Original: TWIMMonitor-3-16.py
 Created: 270619
 Python Version: 3.7.4 64-bit
 Purpose: Script for screening APEX3D-generated ion mobility data to find intensities of known targets from list and generate a 'Hit list'. Hit list is exported to "SAMMmonitor Output'
 in same folder as APEX3D data.
+<<<<<<< HEAD
+Notes: Script modified for EJ3-16 APEXOUT Export
+=======
 Notes: Script modified for EJ3-16 APEXOUT Export 
+>>>>>>> 2d4440d8e8bb37cf9c25746e98a38d86e5d9be04
 """
 
 import os
 import csv
 import sys
+<<<<<<< HEAD
+
+#system path of Apex3d Data
+data_folder = r'D:\2-SAMM\SAMM-Self-Assembly-Mobility-Mapping - Paper Folder\Programming\S-SAMM Programs\SAMM\SAMMmonitor\SAMMmonitor Data\3-72-Example Data\APEX Output'
+
+#system path of targets CSV list
+targets_csv = r'D:\2-SAMM\SAMM-Self-Assembly-Mobility-Mapping - Paper Folder\Programming\S-SAMM Programs\SAMM\SAMMmonitor\SAMMmonitor Data\TargetList-SAMMmonitor-testing.csv'
+=======
 from pathlib import Path
 
 #system path of Apex3D Data
@@ -17,23 +34,54 @@ from pathlib import Path
 data_folder = Path(str('D:\2-SAMM\SAMM Programming\SAMM3Dextract\SAMM3Dextract Data\3-72-Example Data\APEX Output'))
 #system path of targets CSV list
 targets_csv = r'D:\2-SAMM\SAMM Programming\SAMMmonitor\SAMMmonitor Data\TargetList-SAMMmonitor-testing.csv'
+>>>>>>> 2d4440d8e8bb37cf9c25746e98a38d86e5d9be04
 
 # mz_tolerance = error tolerance for m/z value, in either absolute (default), can set as percentage
 # mob_tolerance = error tolerance for mobility, in percentage 
-# mz_units set to 'abs' as default for absolute mz_tolerance. If not 'abs' (i.e. None or whatever, mz_tolerance is read as decimal fraction)
+# mz_units set to 'abs' as default for absolute mz_tolerance. If not 'abs', mz_tolerance is read as decimal fraction)
+
 mz_tolerance, mob_tolerance = 1, 0.05
 
 def read_data_csv(csv_file, delimitchar=',', headers=True):
+<<<<<<< HEAD
+    """[Reads and passes on data from input csv file]
+
+    Arguments:
+        csv_file {str} -- [full str path to .csv file]
+    
+    Keyword Arguments:
+        delimitchar {str} -- [delimiter for csv] (default: {','})
+    
+    Returns:
+        data_list {list} -- [list of csv data by row]
+    """ 
+    data_list = []  #create new list
+    
+=======
     # Reads input csv file
     # Arguments: csv_file {str} -- [full str path to .csv file]
     # **kwargs: delimitchar {str} -- [delimiter for csv] (default: {','})
     # Returns: data_list {list} -- [list of csv data by row]
     data_list = []  #create new list
+>>>>>>> 2d4440d8e8bb37cf9c25746e98a38d86e5d9be04
     with open(csv_file) as f:
         csvreader = csv.reader(f, delimiter = delimitchar)  #open comma-delimited csv
         for row, columns in enumerate(csvreader):
             if (headers and row > 0) or not headers:
                 data_list.append([columns[i] for i in range(0, len(columns))])
+<<<<<<< HEAD
+        
+    return data_list
+
+def list_csv_data_files(data_directory): 
+    """[Returns list of full file paths for data files in directory]
+    
+    Arguments:
+        data_directory {str} -- [full string path to data folder]
+    
+    Returns:
+        files {list} -- [list of full string paths to data files]
+=======
     return data_list
 
 def list_csv_data_files(data_directory): 
@@ -42,18 +90,29 @@ def list_csv_data_files(data_directory):
     Arguments: data_directory {str} -- [full string path to data folder]
     Returns:
     files {list} -- [list of full string paths to data files]
+>>>>>>> 2d4440d8e8bb37cf9c25746e98a38d86e5d9be04
     """
     files = [os.path.join(data_directory, csv_f) for csv_f in os.listdir(data_directory)]
 
     return files 
 
 def fetch_target_data(target_file):
+<<<<<<< HEAD
+    """[Returns dictionary in given targets CSV file]
+    
+    Arguments:
+        target_file {str} -- [full string path to targets CSV]
+    
+    Returns:
+        target_dict {dict} -- [dictionary of name, m/z, mobility from target list]
+=======
     """
     [Returns dictionary in given targets CSV file]
     Arguments:
     target_file {str} -- [full string path to targets CSV]
     Returns:
     target_dict {dict} -- [dictionary of name, m/z, mobility from target list]
+>>>>>>> 2d4440d8e8bb37cf9c25746e98a38d86e5d9be04
     """
     print(f'target_file = {target_file}')
     target_dict = {}
@@ -66,6 +125,21 @@ def fetch_target_data(target_file):
     return target_dict
 
 def check_hit(hit_mz, hit_mobility, target_data, mz_tolerance, mob_tolerance, mz_units='abs'):
+<<<<<<< HEAD
+    """[Parse through data for given m/z (absolute values) and mobility (percentage) with tolerances. 
+        If value is a match, returns true. Otherwise, returns false]
+    
+    Arguments:
+        hit_mz = [observed m/z value to check against target m/z value]
+        hit_mobility = [observed m/z value to check against target m/z value]
+        target_data = [APEX3D exported data file from .items in target_dict dictionary]
+        mz_tolerance = [Selected threshold entered for m/z tolerance required for a 'hit' to be recorded]
+        mob_tolerance = [Selected threshold entered for mobility tolerance in BINS required for a 'hit' to be recorded]
+        mz_units='abs' = [Changed if absolute m/z threshold is not used (i.e. a percentage instead)]
+    
+    Returns:
+        True if target value pair is  within acceptable tolerance. Returns False otherwise.
+=======
     """     
     [Parse through data for given m/z (absolute values) and mobility (percentage) with tolerances. 
     If value is a match, returns true. Otherwise, returns false]
@@ -79,6 +153,7 @@ def check_hit(hit_mz, hit_mobility, target_data, mz_tolerance, mob_tolerance, mz
     mz_units='abs' = [Changed if absolute m/z threshold is not used (i.e. a percentage instead)]
 
     Returns: True if target value pair is  within acceptable tolerance. Returns False otherwise.
+>>>>>>> 2d4440d8e8bb37cf9c25746e98a38d86e5d9be04
     """
     # t_mz, t_mobility  = target m/z, target mobility  
     t_mz, t_mobility = target_data['mz'], target_data['mobility']
@@ -99,7 +174,10 @@ def check_hit(hit_mz, hit_mobility, target_data, mz_tolerance, mob_tolerance, mz
     
     return False
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> 2d4440d8e8bb37cf9c25746e98a38d86e5d9be04
 def screen_hits_for_single_csv(data_csv, target_dict, mz_tolerance, mob_tolerance, mz_units='abs'):
     """[Appends "hits" to a new list, "hits_dict" for each "target"]
     
@@ -133,7 +211,10 @@ def screen_hits_for_single_csv(data_csv, target_dict, mz_tolerance, mob_toleranc
     
     return hits_dict
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> 2d4440d8e8bb37cf9c25746e98a38d86e5d9be04
 def get_output_csv_path(input_csv, output_folder=None, out_string='hits'):
     #Find output folder path if it exists (otherwise make it)
     input_csv_name = os.path.basename(input_csv).replace('.csv', '')
@@ -168,7 +249,13 @@ def write_hits_for_single_csv(data_csv, target_dict, mz_tolerance, mob_tolerance
                             #             'obs_mobility', 'intensity']):
 
     print(f'target_dict = {target_dict}')
+<<<<<<< HEAD
+    hits_dict = screen_hits_for_single_csv(data_csv, target_dict, 
+                                        mz_tolerance, mob_tolerance)
+
+=======
     hits_dict = screen_hits_for_single_csv(data_csv, target_dict, mz_tolerance, mob_tolerance)
+>>>>>>> 2d4440d8e8bb37cf9c25746e98a38d86e5d9be04
     output_csv = get_output_csv_path(data_csv)
     write_output_csv(output_csv, headers)
 
@@ -192,6 +279,15 @@ def write_hits_multiple_csvs(target_dict, csv_folder,
                                 out_folder)
 
 def main(data_folder, targets_csv, mz_tolerance, mob_tolerance, mz_units='abs'): 
+<<<<<<< HEAD
+   
+    target_dict = fetch_target_data(targets_csv)
+
+    write_hits_multiple_csvs(target_dict, data_folder, mz_tolerance, mob_tolerance)
+
+if __name__ == '__main__':
+    main(data_folder, targets_csv, mz_tolerance, mob_tolerance)
+=======
     target_dict = fetch_target_data(targets_csv)
     write_hits_multiple_csvs(target_dict, data_folder, mz_tolerance, mob_tolerance)
 
@@ -199,3 +295,4 @@ if __name__ == '__main__':
     main(data_folder, targets_csv, mz_tolerance, mob_tolerance)
 
 print('\n \n \n \n \n Module ' + str(__name__) + ' Complete')
+>>>>>>> 2d4440d8e8bb37cf9c25746e98a38d86e5d9be04

@@ -8,57 +8,65 @@ import os
 import pandas as pd
 import numpy as np
 
-# Data import functions (From TWIMExtract and APEX3D Output) customized to user input (default: ID: 57-24-RA2)
-def importSAMM2D(userInput=None):
-    # Load 2D CSV files for FR, Z1, Z2
-    # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): \n')
-    # userInput = input('Example: 57-158-BC4')
-    # userInput = '57-158-BC4'
-    basePath = r'D:\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\Experimental Data\3-57-SAMM2\2DExtract(3-57-2)'
-    frMS = str(basePath + r'\Full Range\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
-               userInput + r'-Sampling-2_fn-1_#FullRange-POMSolv-Rangefile.txt_raw.csv')
-    frDT = str(basePath + r'\Full Range\DT\EJ3-' + userInput + r'-Sampling-2\DT_EJ3-' +
-               userInput + r'-Sampling-2_fn-1_#FullRange-POMSolv-Rangefile.txt_raw.csv')
-    z1MS = str(basePath + r'\Z1\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
-               userInput + r'-Sampling-2_fn-1_#POMSolv-Z1-RuleFile.rul_raw.csv')
-    z1DT = str(basePath + r'\Z1\DT\EJ3-' + userInput + r'-Sampling-2\DT_EJ3-' +
-               userInput + r'-Sampling-2_fn-1_#POMSolv-Z1-RuleFile.rul_raw.csv')
-    z2MS = str(basePath + r'\Z2\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
-               userInput + r'-Sampling-2_fn-1_#POMSolv-Z2-RuleFile.rul_raw.csv')
-    z2DT = str(basePath + r'\Z2\DT\EJ3-' + userInput + r'-Sampling-2\DT_EJ3-' +
-               userInput + r'-Sampling-2_fn-1_#POMSolv-Z2-RuleFile.rul_raw.csv')
-    paths = [frMS, frDT, z1MS, z1DT, z2MS, z2DT]
-    frScatter = ([pd.read_csv(i, skiprows=1)
-                  for i in paths if os.path.lexists(i) and i[104:106] == r'Fu'])
-    frScatter = pd.concat([frScatter[0], frScatter[1]], axis=1)
-    frScatter.columns = ['m/z', 'Counts', 'Drift Time', 'Intensity']
+# data import (opt, user input)
+# def importSAMM2D(userInput=None):
+#     # Load 2D CSV files for FR, Z1, Z2
+#     basePath = r'D:\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\Experimental Data\3-57-SAMM2\2DExtract(3-57-2)'
+#     frMS = str(basePath + r'\Full Range\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
+#                userInput + r'-Sampling-2_fn-1_#FullRange-POMSolv-Rangefile.txt_raw.csv')
+#     frDT = str(basePath + r'\Full Range\DT\EJ3-' + userInput + r'-Sampling-2\DT_EJ3-' +
+#                userInput + r'-Sampling-2_fn-1_#FullRange-POMSolv-Rangefile.txt_raw.csv')
+#     z1MS = str(basePath + r'\Z1\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
+#                userInput + r'-Sampling-2_fn-1_#POMSolv-Z1-RuleFile.rul_raw.csv')
+#     z1DT = str(basePath + r'\Z1\DT\EJ3-' + userInput + r'-Sampling-2\DT_EJ3-' +
+#                userInput + r'-Sampling-2_fn-1_#POMSolv-Z1-RuleFile.rul_raw.csv')
+#     z2MS = str(basePath + r'\Z2\MS\EJ3-' + userInput + r'-Sampling-2\MZ_EJ3-' +
+#                userInput + r'-Sampling-2_fn-1_#POMSolv-Z2-RuleFile.rul_raw.csv')
+#     z2DT = str(basePath + r'\Z2\DT\EJ3-' + userInput + r'-Sampling-2\DT_EJ3-' +
+#                userInput + r'-Sampling-2_fn-1_#POMSolv-Z2-RuleFile.rul_raw.csv')
+#     paths = [frMS, frDT, z1MS, z1DT, z2MS, z2DT]
+#
+#     # separate data by charge state
+#     frScatter = ([pd.read_csv(i, skiprows=1)
+#                   for i in paths if os.path.lexists(i) and i[104:106] == r'Fu'])
+#     frScatter = pd.concat([frScatter[0], frScatter[1]], axis=1)
+#     frScatter.columns = ['m/z', 'Counts', 'Drift Time', 'Intensity']
+#
+#     z1Scatter = ([pd.read_csv(i, skiprows=1)
+#                   for i in paths if os.path.lexists(i) and i[104:106] == r'Z1'])
+#     z1Scatter = pd.concat([z1Scatter[0], z1Scatter[1]], axis=1)
+#     z1Scatter.columns = ['m/z', 'Counts', 'Drift Time', 'Intensity']
+#
+#     z2Scatter = ([pd.read_csv(i, skiprows=1)
+#                   for i in paths if os.path.lexists(i) and i[104:106] == r'Z2'])
+#     z2Scatter = pd.concat([z2Scatter[0], z2Scatter[1]], axis=1)
+#     z2Scatter.columns = ['m/z', 'Counts', 'Drift Time', 'Intensity']
+#
+#     return frScatter, z1Scatter, z2Scatter, userInput
+path_name
+if os.path.lexists(path_name) and str.pathname[104:106] == r'Fu':
+    pd.read_csv(pathname)
 
-    z1Scatter = ([pd.read_csv(i, skiprows=1)
-                  for i in paths if os.path.lexists(i) and i[104:106] == r'Z1'])
-    z1Scatter = pd.concat([z1Scatter[0], z1Scatter[1]], axis=1)
-    z1Scatter.columns = ['m/z', 'Counts', 'Drift Time', 'Intensity']
+pd.read_csv?
 
-    z2Scatter = ([pd.read_csv(i, skiprows=1)
-                  for i in paths if os.path.lexists(i) and i[104:106] == r'Z2'])
-    z2Scatter = pd.concat([z2Scatter[0], z2Scatter[1]], axis=1)
-    z2Scatter.columns = ['m/z', 'Counts', 'Drift Time', 'Intensity']
-    return frScatter, z1Scatter, z2Scatter, userInput
+pd.read_csv(if os.path.lexists(pathname) and str.pathname[104:106] == r'Fu'])
+([pd.read_csv(i, skiprows=1)
+              for i in paths if os.path.lexists(i) and i[104:106] == r'Fu'])
 
-# Create Dataframes
-frScatter, z1Scatter, z2Scatter, fileID = importSAMM2D('57-158-BC4')
-# frScat2, z1Scat2, z2Scat2, fileID2 = importSAMM2D('57-26-RA4')
 
+
+# fuunction to pass in some data (full range, or by charge) and plot
 def ridgelinePlot(scatterData):
     import altair as alt
-    source = data.seattle_weather.url
-    x = scatterData['m/z']
-    y = scatterData['Counts']
     source = scatterData
-
+    mz = source['m/z']
+    cnts = source['Counts']
+    dt = source['Drift Time']
+    intensity = source['Intensity']
     step = 20
     overlap = 1
-
-    alt.Chart(source, height=step).transform_timeunit(
+###
+    alt.Chart(source, height=20).transform_timeunit(
         Month='month(date)'
     ).transform_joinaggregate(
         mean_temp='mean(temp_max)', groupby=['Month']
@@ -104,3 +112,9 @@ def ridgelinePlot(scatterData):
 
     print(f'Saving {experiment} plot...')
     # fig5Chart.save(r'D:/Programming/SAMM/SAMMplot/Figure 5/Figure 5.html')
+
+# Create Dataframes
+frScatter, z1Scatter, z2Scatter, fileID = importSAMM2D('57-158-BC4')
+# frScat2, z1Scat2, z2Scat2, fileID2 = importSAMM2D('57-26-RA4')
+
+ridgelinePlot(frScatter)

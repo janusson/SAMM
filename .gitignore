@@ -5,6 +5,8 @@ Output/
 Example Data/
 datashader-examples/
 DriftScope Program Files (backup)/
+0-Archive/
+.vscode/
 
 #Working Files
 *.exe
@@ -21,11 +23,14 @@ DriftScope Program Files (backup)/
 *.1dMZ
 *.1dRT
 *.code-workspace
-*.html
+
+#Jupyter Notebooks!!!
+*.ipynb
 
 #Images
 *.jpg
 *.png
+*.html
 *.svg
 *.tiff
 *.ai
