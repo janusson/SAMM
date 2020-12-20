@@ -1,29 +1,22 @@
 #!python3
-
-#   SAMM-3D-extract.py
-#   Eric Janusson
-#   Python 3.7.4 (Base: Conda)
-#   Usage: 3D Mass/Charge/Mobility data extraction from Waters .RAW TWIMS-MS files using Apex3D subprocess
 """
-SAMM3Dextract-190220.py
 Eric Janusson
-Python 3.7.4 (64-bit)
+Python 3.9
 Usage: Mass/Charge/Mobility Extraction from Waters .RAW files using high-density APEX3D extraction.
 Paste data directory containing .RAW files to be exported into 3D CSV files in the given directory as "APEX Output"
+Usage: 3D Mass/Charge/Mobility data extraction from Waters .RAW TWIMS-MS files using DriftScope Apex3D subprocess.
 """
 import os
-import csv
 import sys
 import subprocess
 from pathlib import Path
 
 #   Define Driftscope paths for APEX subprocess:
 # NOTE Waters DriftScope software must be installed in the default directory.
-apexPath = r"C:\DriftScope\lib\Apex3D64.exe"
-apexLogPath = r"C:\DriftScope\log\_Apex3DLog.txt"
+apexPath = Path(r"C:\DriftScope\lib\Apex3D64.exe")
+apexLogPath = Path(r"C:\DriftScope\log\_Apex3DLog.txt")
 
 # Check DS install dirs for required files
-
 
 def checkFiles():
     if (os.path.isfile(apexPath) and os.path.isfile(apexLogPath)):
@@ -33,8 +26,8 @@ def checkFiles():
         print(r"Check DriftScope installation is present at C:\DriftScope.")
         sys.exit()
 
-
-checkFiles()  # ensure DS/APEX installed
+checkFiles()
+# ensure DS/APEX installed
 
 
 def getDataDir():

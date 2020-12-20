@@ -1,27 +1,35 @@
 """ Filename: SAMMmonitor-121219.py
 Original: TWIMMonitor-3-16.py
 Created: 270619
-Python Version: 3.7.4 64-bit
-Purpose: Script for screening APEX3D-generated ion mobility data to find intensities of known targets from list and generate a 'Hit list'. Hit list is exported to "SAMMmonitor Output'
+Python Version: 3.9.0
+Purpose: Script for screening APEX3D-generated ion mobility data to find intensities of known targets 
+from list and generate a 'Hit list'. Hit list is exported to "SAMMmonitor Output'
 in same folder as APEX3D data.
 Notes: Script modified for EJ3-16 APEXOUT Export 
 """
 
 import os
 import csv
-import sys
 from pathlib import Path
 
-#system path of Apex3D Data
-# data_folder = r'D:\2-SAMM\SAMM-Self-Assembly-Mobility-Mapping - Paper Folder\Programming\S-SAMM Programs\SAMM\SAMMmonitor\SAMMmonitor Data\3-72-Example Data\APEX Output'
-data_folder = Path(str('D:\2-SAMM\SAMM Programming\SAMM3Dextract\SAMM3Dextract Data\3-72-Example Data\APEX Output'))
-#system path of targets CSV list
-targets_csv = r'D:\2-SAMM\SAMM Programming\SAMMmonitor\SAMMmonitor Data\TargetList-SAMMmonitor-testing.csv'
+## Constants:
+# data_folder, targets_csv, mz_tolerance, mob_tolerance
+'''
+former path of Apex3D Data
+data_folder = r'D:\2-SAMM\SAMM-Self-Assembly-Mobility-Mapping - Paper Folder\Programming\
+S-SAMM Programs\SAMM\SAMMmonitor\SAMMmonitor Data\3-72-Example Data\APEX Output'
+'''
+data_folder = Path(r'D:\2-SAMM\Programs\SAMM\SAMMmonitor\0-Archive\SAMMmonitor Data\3-72-Example Data\APEX Output')
+# path of CSV file with target analytes
+targets_csv = Path(r'D:\2-SAMM\Programs\SAMM\SAMMmonitor\experimental-target-list.csv')
 
-# mz_tolerance = error tolerance for m/z value, in either absolute (default), can set as percentage
-# mob_tolerance = error tolerance for mobility, in percentage 
-# mz_units set to 'abs' as default for absolute mz_tolerance. If not 'abs' (i.e. None or whatever, mz_tolerance is read as decimal fraction)
-mz_tolerance, mob_tolerance = 1, 0.05
+# mz_tolerance = error tolerance for target m/z value (default: 1 m/z)
+# mob_tolerance = error tolerance for mobility, in percentage  (default: 0.05 m/z)
+# mz_units set to 'abs' as default for absolute mz_tolerance. 
+# if not 'abs' (i.e. None or whatever, mz_tolerance is read as decimal fraction)
+mz_tolerance, mob_tolerance = 1.0, 0.05
+
+## Functions
 
 def read_data_csv(csv_file, delimitchar=',', headers=True):
     # Reads input csv file
@@ -44,12 +52,11 @@ def list_csv_data_files(data_directory):
     files {list} -- [list of full string paths to data files]
     """
     files = [os.path.join(data_directory, csv_f) for csv_f in os.listdir(data_directory)]
-
-    return files 
+    return files
 
 def fetch_target_data(target_file):
     """
-    [Returns dictionary in given targets CSV file]
+    [Returns dictionary of analyte target CSV file]
     Arguments:
     target_file {str} -- [full string path to targets CSV]
     Returns:
@@ -60,10 +67,14 @@ def fetch_target_data(target_file):
     target_data_list = read_data_csv(target_file)
 
     for data in target_data_list: 
-        target, target_mz, target_mob = data[0], data[1], data[2] #target Name / Expected m/z / Mobility NOTE - are headers skipped?
+        target, target_mz, target_mob = data[0], data[1], data[2] 
+        #target Name / Expected m/z / Mobility NOTE - are headers skipped?
         target_dict[target] = {'mz': float(target_mz), 'mobility': float(target_mob)}
 
     return target_dict
+
+
+
 
 def check_hit(hit_mz, hit_mobility, target_data, mz_tolerance, mob_tolerance, mz_units='abs'):
     """     
@@ -78,7 +89,7 @@ def check_hit(hit_mz, hit_mobility, target_data, mz_tolerance, mob_tolerance, mz
     mob_tolerance = [Selected threshold entered for mobility tolerance in BINS required for a 'hit' to be recorded]
     mz_units='abs' = [Changed if absolute m/z threshold is not used (i.e. a percentage instead)]
 
-    Returns: True if target value pair is  within acceptable tolerance. Returns False otherwise.
+    Returns: True if target value pair is within acceptable tolerance. Returns False otherwise.
     """
     # t_mz, t_mobility  = target m/z, target mobility  
     t_mz, t_mobility = target_data['mz'], target_data['mobility']
@@ -98,7 +109,6 @@ def check_hit(hit_mz, hit_mobility, target_data, mz_tolerance, mob_tolerance, mz
         return False 
     
     return False
-
 
 def screen_hits_for_single_csv(data_csv, target_dict, mz_tolerance, mob_tolerance, mz_units='abs'):
     """[Appends "hits" to a new list, "hits_dict" for each "target"]
@@ -133,9 +143,9 @@ def screen_hits_for_single_csv(data_csv, target_dict, mz_tolerance, mob_toleranc
     
     return hits_dict
 
-
 def get_output_csv_path(input_csv, output_folder=None, out_string='hits'):
     #Find output folder path if it exists (otherwise make it)
+
     input_csv_name = os.path.basename(input_csv).replace('.csv', '')
 
     if not output_folder:
@@ -183,9 +193,8 @@ def write_hits_for_single_csv(data_csv, target_dict, mz_tolerance, mob_tolerance
 def write_hits_multiple_csvs(target_dict, csv_folder, 
                             mz_tolerance, mob_tolerance,
                             out_folder=None):
-    
     csv_files = list_csv_data_files(csv_folder)
-
+    
     for csv_file in csv_files:
         write_hits_for_single_csv(csv_file, target_dict, 
                                 mz_tolerance, mob_tolerance,
@@ -194,8 +203,8 @@ def write_hits_multiple_csvs(target_dict, csv_folder,
 def main(data_folder, targets_csv, mz_tolerance, mob_tolerance, mz_units='abs'): 
     target_dict = fetch_target_data(targets_csv)
     write_hits_multiple_csvs(target_dict, data_folder, mz_tolerance, mob_tolerance)
+    print(target_dict)
 
 if __name__ == '__main__':
-    main(data_folder, targets_csv, mz_tolerance, mob_tolerance)
-
-print('\n \n \n \n \n Module ' + str(__name__) + ' Complete')
+    print('\n \n >>> Training wheels are still on!')
+    # main(data_folder, targets_csv, mz_tolerance, mob_tolerance)
