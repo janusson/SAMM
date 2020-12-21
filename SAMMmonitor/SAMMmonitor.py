@@ -2,32 +2,34 @@
 SAMMmonitor.py
 Created: 270619
 Python Version: 3.9.0
-Purpose: Script for screening APEX3D-generated ion mobility data to find intensities of known targets
-from list and generate a 'Hit list'. Hit list is exported to "SAMMmonitor Output'
-in same folder as APEX3D data.
-Notes: Script modified for EJ3-16 APEXOUT Export
+Purpose: Script for screening APEX3D-generated ion mobility data
+and report intensities a list of targets. 
+Input: Data folder containing .csv APEX3D data (ex: from 3D-TWIMS-extract.py)
+Output is exported to "SAMMmonitor Output' in data directory.
+
 """
 
 import os
 import csv
 from pathlib import Path
 
-# Constants:
+# Constants / Directories:
 
-# data_folder, targets_csv, mz_tolerance, mob_tolerance
-
-data_folder = Path(
-    r'D:\2-SAMM\Programs Folder\SAMM\SAMMmonitor\Data\3-72-Example Data\APEX Output')
+monitorDir = str(os.getcwd())
+# {CWD}\Data\EJ3-72-56-RA1-Sampling_Apex3DIons.csv
+data_folder = Path(monitorDir + r'\\Data\\')
 # path of CSV file with target analytes
-targets_csv = Path(
-    r'D:\2-SAMM\Programs Folder\SAMM\SAMMmonitor\experimental-target-list.csv')
+targets_csv = Path(monitorDir + r'\experimental-target-list.csv')
+
+print(monitorDir)
+print(data_folder)
+print(targets_csv)
 
 # mz_tolerance = error tolerance for target m/z value (default: 1 m/z)
 # mob_tolerance = error tolerance for mobility, in percentage  (default: 0.05 m/z)
 mz_tolerance, mob_tolerance = 1.0, 0.05
 
 # Functions:
-
 
 def read_data_csv(csv_file, delimitchar=',', headers=True):
     # Reads input csv file
