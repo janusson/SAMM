@@ -8,6 +8,7 @@ Input: Data folder containing .csv APEX3D data (ex: from 3D-TWIMS-extract.py)
 Summary output .csv is exported to data directory.
 '''
 
+import sys
 import os
 import csv
 from pathlib import Path
@@ -24,7 +25,7 @@ monitorDir = str(os.getcwd())
 # refer to : for data location:
 data_directory = Path(
     r'D:\\2-SAMM\Data\EJ3-60-SAMM3-MoMonitoring\Raw Data\APEX Output')
-    # D:\2-SAMM\Data\EJ3-60-SAMM3-MoMonitoring\Raw Data\APEX Output
+# D:\2-SAMM\Data\EJ3-60-SAMM3-MoMonitoring\Raw Data\APEX Output
 
 # path of CSV file with target analytes
 targets_csv = Path(
@@ -58,6 +59,7 @@ def read_data_csv(csv_file, delimitchar=',', headers=True):
                 pass
     return data_list
 
+
 def fetch_target_data(target_file):
     '''
     [Returns dictionary of analyte targets from .csv file]
@@ -66,29 +68,31 @@ def fetch_target_data(target_file):
     Returns:
     target_dict {dict} -- [dictionary of name, m/z, mobility from target list]
     '''
-    print(f'Retrieving analyte formula, base peak m/z, observed drift time (ms) from target_file: \n {target_file}\n')
+    print(
+        f'Retrieving analyte formula, base peak m/z, observed drift time (ms) from target_file: \n {target_file}\n')
     target_dict = {}
-    
+
     target_data_file = read_data_csv(target_file)
 
     for data in target_data_file:
         target, target_mz, target_mob = data[0], float(data[2]), float(data[3])
         target_dict[target] = {'mz': target_mz, 'mobility': target_mob}
-        
+
     return target_dict
 
 
-
 # put the experimental reference data into dictionary
-input1 = fetch_target_data(targets_csv)
+target_data = fetch_target_data(targets_csv)
 
 # apex 3d Data file - single test:
 testData = read_data_csv(csv_files[0])
 
-print(testData)
+# practice from line of target data:
+print(target_data['[HMo7O22]–'])
+# print(testData)
 
 
-practice_mz = ### continue
+# practice_mz =
 
 # check for ms hit
 # for analyte in input1.keys():
@@ -107,16 +111,11 @@ practice_mz = ### continue
 #         return False
 
 
-
-
-
-
 ###
 # ending script and testing notes:
 # test csv: input1
 # target_dict, data_directory, mz_tolerance, mob_tolerance
 
-import sys
 sys.exit('Stopping Program....')
 ###
 
@@ -138,7 +137,8 @@ def get_output_csv_path(input_csv):
     '''
     input_csv_name = os.path.basename(input_csv).replace('.csv', '')
 
-    output_folder = os.path.join(monitorDir + 'SAMMmonitor Output - ' + str(hmmss))
+    output_folder = os.path.join(
+        monitorDir + 'SAMMmonitor Output - ' + str(hmmss))
     if not os.path.exists(output_folder):
         os.mkdir(output_folder)
 
@@ -167,7 +167,7 @@ def write_hits_for_single_csv(data_csv, target_dict, mz_tolerance, mob_tolerance
                                                         'Observed m/z', 'm/z No Cal', 'RT', 'Intensity', 'Area', 'Counts', 'Mobility']):
     targ_dict = screen_hits_for_single_csv(
         data_csv, target_dict, mz_tolerance, mob_tolerance
-        )
+    )
     output_csv = get_output_csv_path(data_csv)
     write_output_csv(output_csv, headers)
 
@@ -192,7 +192,7 @@ def write_hits_multiple_csvs(target_dict, csv_folder,
 # Module initiation and main
 def main():
     target_dict = fetch_target_data(targets_csv)
-    
+
     # write_hits_multiple_csvs(target_dict, data_directory,
     #                          mz_tolerance, mob_tolerance)
 
@@ -202,11 +202,8 @@ if __name__ == '__main__':
     # main(data_directory, targets_csv, mz_tolerance, mob_tolerance)
     print('\n---===--- \nprogram end at: ' + str(datetime.now()))
 
-### To do:
+# To do:
 # sum output of counts for each target mz
-
-
-
 
 
 ## unused / testing
