@@ -93,21 +93,27 @@ print(target_data['[HMo7O22]–'])
 
 
 # check for ms hit
-for analyte in input1.keys():
-    formula = str(analyte)
-    analyte_mz = input1.get(analyte).get('mz')
-    analyte_dt = input1.get(analyte).get('mobility')
-    # check if the above information matches the current line of data in the current apex3d data file
-    if target_mz_from_file >= target_mz_from_file - mz_tolerance and target_mz_from_file <= target_mz_from_file + mz_tolerance:
-        # and if the mobility is within specified range (default 5% chosen)
-        mob_delta = target_mob * 0.05
-        if data_mob >= target_mob - mob_delta and data_mob <= target_mob + mob_delta:
-            # sum signals and combine with analyte name vs. time
-            return True
-    else:
-        print('-')
-        return False
-    print(analyte)
+def integrate_target(target_data, ):
+    for analyte in target_data.keys():
+        formula = str(analyte)
+        analyte_mz = target_data.get(analyte).get('mz')
+        analyte_dt = target_data.get(analyte).get('mobility')
+        # check if the above information matches the current line of data in the current apex3d data file
+
+        # open each Apex3D CSV file individually and parse through lines after using read_data_csv(). If the m/z and mobility 
+        # line up then sum it and return the sum, the name of the file, and the name of the analyte.
+
+
+        if target_mz_from_file >= target_mz_from_file - mz_tolerance and target_mz_from_file <= target_mz_from_file + mz_tolerance:
+            # and if the mobility is within specified range (default 5% chosen)
+            mob_delta = target_mob * 0.05
+            if data_mob >= target_mob - mob_delta and data_mob <= target_mob + mob_delta:
+                # sum signals and combine with analyte name vs. time
+                return True
+        else:
+            print('-')
+            return False
+        print(analyte)
 
 
 ###
