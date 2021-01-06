@@ -87,6 +87,9 @@ print(target_data['[HMo7O22]–'])
 
 
 ## read and integrate data per file from dictionary
+
+'''
+
 def importSAMM3D(file3D):
     # Process Apex3D CSV files for given experiment
 
@@ -115,6 +118,7 @@ def importSAMM3D(file3D):
         columns=['m/z', 'DT', 'Area', 'm/z Error', 'DT Error', 'Area Error'])
     return newApexDF
 
+'''
 
 # for dataDir in csv_files:
 #     if dataDir[-4:0] == '.csv':
