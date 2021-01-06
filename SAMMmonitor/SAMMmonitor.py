@@ -92,21 +92,14 @@ print(target_data['[HMo7O22]–'])
 
 # read and integrate data per file from dictionary
 
-'''
-
-def importSAMM3D(file3D):
+def importSAMM3D(csv_path):
     # Process Apex3D CSV files for given experiment
 
     # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): ') #TEST
     # userInputApex = input('Example: 57-24-RA2') #TEST
-    userInputApex = str(file3D)
+    path = str(csv_path)
 
-    apexPath = r'D:\\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\SAMM3D Extracts\APEX Output(3-57)'
-    apexMS = str(apexPath + r'\Full Range\MS\EJ3-' + userInputApex +
-                 r'-Sampling-2\MZ_EJ3-' + r'-Sampling-2_Apex3DIons.csv')
-    apexMS = str(r'D:\\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\SAMM3D Extracts\APEX Output(3-57)\EJ3-' +
-                 userInputApex + '-Sampling-2_Apex3DIons.csv')
-    apexDF = pd.read_csv(apexMS)
+    apexDF = pd.read_csv(path)
     x, y, z, = (
         list(apexDF['m_z']),
         list(apexDF['mobility']),
@@ -122,13 +115,13 @@ def importSAMM3D(file3D):
         columns=['m/z', 'DT', 'Area', 'm/z Error', 'DT Error', 'Area Error'])
     return newApexDF
 
-'''
 
-# for dataDir in csv_files:
-#     if dataDir[-4:0] == '.csv':
-#         print(dataDir[-4:0])
-#     else:
-#         importSAMM3D(data_directory)
+for dataDir in csv_files:
+    if dataDir[-4:0] == '.csv':
+        print(dataDir[-4:0])
+    else:
+        importSAMM3D(data_directory)
+# - - continue
 
 
 '''
