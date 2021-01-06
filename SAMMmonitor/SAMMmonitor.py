@@ -23,7 +23,7 @@ day = str(datetime.now()).split(' ')[0][2:10].replace(':', '')
 # directories:
 monitorDir = str(os.getcwd())
 
-# default directory of Apex3D output data csv files 
+# default directory of Apex3D output data csv files
 data_directory = Path(
     r'D:\\2-SAMM\Data\EJ3-60-SAMM3-MoMonitoring\Raw Data\APEX Output')
 # D:\2-SAMM\Data\EJ3-60-SAMM3-MoMonitoring\Raw Data\APEX Output
@@ -40,6 +40,8 @@ csv_files = [os.path.join(data_directory, csv_f)
              for csv_f in os.listdir(data_directory)]
 
 # Functions:
+
+
 def read_data_csv(csv_file, delimitchar=',', headers=True):
     '''
     [Reads input csv file excluding headers and returns contents as list of lists]
@@ -57,6 +59,7 @@ def read_data_csv(csv_file, delimitchar=',', headers=True):
             else:
                 pass
     return data_list
+
 
 def fetch_target_data(target_file):
     '''
@@ -78,6 +81,7 @@ def fetch_target_data(target_file):
 
     return target_dict
 
+
 # put the experimental reference data into dictionary
 target_data = fetch_target_data(targets_csv)
 
@@ -86,7 +90,7 @@ print('Reference m/z and drift time data data for [HMo7O22] from file:')
 print(target_data['[HMo7O22]–'])
 
 
-## read and integrate data per file from dictionary
+# read and integrate data per file from dictionary
 
 '''
 
@@ -125,8 +129,6 @@ def importSAMM3D(file3D):
 #         print(dataDir[-4:0])
 #     else:
 #         importSAMM3D(data_directory)
-
-
 
 
 '''
