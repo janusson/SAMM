@@ -13,32 +13,31 @@ import os
 import csv
 from pathlib import Path
 from datetime import datetime, date, time, timezone
+import pandas as pd
 
 # time functions
 print('program start at: ' + str(datetime.now()) + '\n---===---\n')
 hmmss = str(datetime.now()).split(' ')[1][0:8].replace(':', '')
 day = str(datetime.now()).split(' ')[0][2:10].replace(':', '')
 
-# Directories:
+# directories:
 monitorDir = str(os.getcwd())
 
-# refer to : for data location:
+# default directory of Apex3D output data csv files 
 data_directory = Path(
     r'D:\\2-SAMM\Data\EJ3-60-SAMM3-MoMonitoring\Raw Data\APEX Output')
 # D:\2-SAMM\Data\EJ3-60-SAMM3-MoMonitoring\Raw Data\APEX Output
 
-# path of CSV file with target analytes
+# path of CSV file with target analyte
 targets_csv = Path(
-    r'D:\\2-SAMM\Programs\SAMM\SAMMmonitor\experimental-target-list.csv')
+    r'SAMMmonitor\experimental-target-list.csv')
 
-# mz_tolerance = error tolerance for target m/z value (default: 1 m/z)
-# mob_tolerance = error tolerance for mobility, in percentage  (default: 0.05 m/z)
+# mz_tolerance = target m/z error tolerance (default: 1 m/z)
+# mob_tolerance = mobility error tolerance, in percentage  (default: 0.05 m/z)
 mz_tolerance, mob_tolerance = 1.0, 0.05
-
 
 csv_files = [os.path.join(data_directory, csv_f)
              for csv_f in os.listdir(data_directory)]
-
 
 # Functions:
 def read_data_csv(csv_file, delimitchar=',', headers=True):
@@ -58,7 +57,6 @@ def read_data_csv(csv_file, delimitchar=',', headers=True):
             else:
                 pass
     return data_list
-
 
 def fetch_target_data(target_file):
     '''
@@ -80,18 +78,54 @@ def fetch_target_data(target_file):
 
     return target_dict
 
-
 # put the experimental reference data into dictionary
 target_data = fetch_target_data(targets_csv)
 
-# apex 3d Data file - single test:
-testData = read_data_csv(csv_files[0])
-
 # practice from line of target data:
+print('Reference m/z and drift time data data for [HMo7O22] from file:')
 print(target_data['[HMo7O22]–'])
-# print(testData)
 
 
+## read and integrate data per file from dictionary
+def importSAMM3D(file3D):
+    # Process Apex3D CSV files for given experiment
+
+    # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): ') #TEST
+    # userInputApex = input('Example: 57-24-RA2') #TEST
+    userInputApex = str(file3D)
+
+    apexPath = r'D:\\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\SAMM3D Extracts\APEX Output(3-57)'
+    apexMS = str(apexPath + r'\Full Range\MS\EJ3-' + userInputApex +
+                 r'-Sampling-2\MZ_EJ3-' + r'-Sampling-2_Apex3DIons.csv')
+    apexMS = str(r'D:\\2-SAMM\SAMM - Data Workup Folder\Data Workup (300919)\SAMM3D Extracts\APEX Output(3-57)\EJ3-' +
+                 userInputApex + '-Sampling-2_Apex3DIons.csv')
+    apexDF = pd.read_csv(apexMS)
+    x, y, z, = (
+        list(apexDF['m_z']),
+        list(apexDF['mobility']),
+        list(apexDF['area']),
+    )
+    xError, yError, zError = (
+        list(apexDF['errMzPPM']),
+        list(apexDF['errMobility']),
+        list(apexDF['errArea']),
+    )
+    newApexDF = pd.DataFrame(
+        zip(x, y, z, xError, yError, zError),
+        columns=['m/z', 'DT', 'Area', 'm/z Error', 'DT Error', 'Area Error'])
+    return newApexDF
+
+
+# for dataDir in csv_files:
+#     if dataDir[-4:0] == '.csv':
+#         print(dataDir[-4:0])
+#     else:
+#         importSAMM3D(data_directory)
+
+
+
+
+'''
 # check for ms hit
 def integrate_target(target_data, ):
     for analyte in target_data.keys():
@@ -103,7 +137,6 @@ def integrate_target(target_data, ):
         # open each Apex3D CSV file individually and parse through lines after using read_data_csv(). If the m/z and mobility 
         # line up then sum it and return the sum, the name of the file, and the name of the analyte.
 
-
         if target_mz_from_file >= target_mz_from_file - mz_tolerance and target_mz_from_file <= target_mz_from_file + mz_tolerance:
             # and if the mobility is within specified range (default 5% chosen)
             mob_delta = target_mob * 0.05
@@ -114,7 +147,7 @@ def integrate_target(target_data, ):
             print('-')
             return False
         print(analyte)
-
+'''
 
 ###
 # ending script and testing notes:
