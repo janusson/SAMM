@@ -41,11 +41,10 @@ csv_files = [os.path.join(data_directory, csv_f)
 
 # Functions:
 
-
 def read_data_csv(csv_file, delimitchar=',', headers=True):
     '''
     [Reads input csv file excluding headers and returns contents as list of lists]
-    Arguments: csv_file {str} -- [full str path to .csv file]
+    *args: csv_file {str} -- [full str path to .csv file]
     **kwargs: delimitchar {str} -- [delimiter for csv] (default: {','})
     Returns: data_list {list} -- [list of csv data by row]
     '''
@@ -81,22 +80,19 @@ def fetch_target_data(target_file):
 
     return target_dict
 
-
 # put the experimental reference data into dictionary
 target_data = fetch_target_data(targets_csv)
+print(type(target_data))
 
-# practice from line of target data:
-print('Reference m/z and drift time data data for [HMo7O22] from file:')
+# reference information for testing
+print('Reference m/z and drift time data data for [HMo_7O_22]^–2 from file:')
 print(target_data['[HMo7O22]–'])
 
-
-# read and integrate data per file from dictionary
-
 def importSAMM3D(csv_path):
-    # Process Apex3D CSV files for given experiment
-
-    # print('Enter EJ3-57 Experiment ID (Enter in the form: #-##-##-XX#): ') #TEST
-    # userInputApex = input('Example: 57-24-RA2') #TEST
+    '''
+    ### Process Apex3D CSV files for given experiment filepath. Returned as DF.
+    '''
+    
     path = str(csv_path)
 
     apexDF = pd.read_csv(path)
@@ -116,44 +112,62 @@ def importSAMM3D(csv_path):
     return newApexDF
 
 
-for dataDir in csv_files:
-    if dataDir[-4:0] == '.csv':
-        print(dataDir[-4:0])
-    else:
-        importSAMM3D(data_directory)
-# - - continue
+def integrate_targets(target_data):
+    '''
+    Combine analyte dictionary and Apex3D data to sum matching hits.
+    '''
+    #for each csv file
+
+    for dataDir in csv_files:
+        rawData = importSAMM3D(dataDir)
+        mz_data, dt_data, counts = rawData['m/z'], rawData['DT'], rawData['Area']
+
+        #for each analyte in experimental target reference data 
+        for analyte in target_data.keys():
+            formula = str(analyte)
+            analyte_mz = target_data.get(analyte).get('mz')
+            analyte_dt = target_data.get(analyte).get('mobility')
+            # print(str(analyte_mz))
+
+            for x in analyte_mz:
+                for y in analyte_dt:
+                    for experimental_mz in mz_data:
+                        for experimental_dt in dt_data:
+                            # if experimental_mz == (entry +/- mz_tolerance) and experimental_dt == (entry +/- mob_tolerance):
+                            print('mz: ')
+                            print(experimental_mz)
+                            print('dt: ')
+                            print(experimental_dt)
+
+# integrate_targets(target_data)
+
+            # if the m/z and mobility line up for the entry, sum/integrate peak
+            # for analyte_mz
+            #     for target_mz_from_file in mz_data:
+
+            #         if analyte_mz >= target_mz_from_file - mz_tolerance
+            #         and target_mz_from_file <= target_mz_from_file + mz_tolerance 
+            #         and data_mob >= target_mob - mob_delta and data_mob <= target_mob + mob_delta:
+                    
+                    
+                    
+            #         # and if the mobility is within specified range (default 5% chosen)
+            #             mob_delta = target_mob * mob_tolerance
+                        
+            #             if data_mob >= target_mob - mob_delta and data_mob <= target_mob + mob_delta:
+            #                 # sum signals and combine with analyte name vs. time
+            #                 analyte_count_sum = analyte_count_sum + 
+            #                 return True
 
 
-'''
-# check for ms hit
-def integrate_target(target_data, ):
-    for analyte in target_data.keys():
-        formula = str(analyte)
-        analyte_mz = target_data.get(analyte).get('mz')
-        analyte_dt = target_data.get(analyte).get('mobility')
-        # check if the above information matches the current line of data in the current apex3d data file
-
-        # open each Apex3D CSV file individually and parse through lines after using read_data_csv(). If the m/z and mobility 
-        # line up then sum it and return the sum, the name of the file, and the name of the analyte.
-
-        if target_mz_from_file >= target_mz_from_file - mz_tolerance and target_mz_from_file <= target_mz_from_file + mz_tolerance:
-            # and if the mobility is within specified range (default 5% chosen)
-            mob_delta = target_mob * 0.05
-            if data_mob >= target_mob - mob_delta and data_mob <= target_mob + mob_delta:
-                # sum signals and combine with analyte name vs. time
-                return True
-        else:
-            print('-')
-            return False
-        print(analyte)
-'''
 
 ###
+
 # ending script and testing notes:
 # test csv: input1
 # target_dict, data_directory, mz_tolerance, mob_tolerance
 
-sys.exit('Stopping Program....')
+sys.exit('\n- = - End of Program - = -\n')
 ###
 
 
