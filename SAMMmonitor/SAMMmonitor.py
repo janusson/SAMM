@@ -14,6 +14,7 @@ import csv
 from pathlib import Path
 from datetime import datetime, date, time, timezone
 import pandas as pd
+from pandas.core.frame import DataFrame
 
 # time functions
 print('program start at: ' + str(datetime.now()) + '\n---===---\n')
@@ -26,7 +27,6 @@ monitorDir = str(os.getcwd())
 # default directory of Apex3D output data csv files
 data_directory = Path(
     r'D:\\2-SAMM\Data\EJ3-60-SAMM3-MoMonitoring\Raw Data\APEX Output')
-# D:\2-SAMM\Data\EJ3-60-SAMM3-MoMonitoring\Raw Data\APEX Output
 
 # path of CSV file with target analyte
 targets_csv = Path(
@@ -90,9 +90,13 @@ print(target_data['[HMo7O22]–'])
 
 def importSAMM3D(csv_path):
     '''
-    ### Process Apex3D CSV files for given experiment filepath. Returned as DF.
+    Processes relevant data from Apex3D .csv file
+    Arguments:
+        csv_path {string} -- filepath of Apex3D .csv data file. 
+    Returns:
+        newApexDF 
     '''
-    
+
     path = str(csv_path)
 
     apexDF = pd.read_csv(path)
@@ -108,21 +112,39 @@ def importSAMM3D(csv_path):
     )
     newApexDF = pd.DataFrame(
         zip(x, y, z, xError, yError, zError),
-        columns=['m/z', 'DT', 'Area', 'm/z Error', 'DT Error', 'Area Error'])
+        columns=['m/z', 'DT', 'Area', 'm/z Error', 'DT Error', 'Area Error']
+        )
+
     return newApexDF
 
+# study pandas df filtering method, want something like below:
+
+
+'''
+target = 900
+for i in x['m/z']:
+    upperMZ, lowerMZ = target+mz_tolerance, target-mz_tolerance
+    if i>=lowerMZ and i<=upperMZ:
+        print(i)
+
+
+        # check DT match
+        #     retrieve area
+'''
+
+
+### fix function below
 
 def integrate_targets(target_data):
     '''
-    Combine analyte dictionary and Apex3D data to sum matching hits.
+    ### Combine analyte dictionary and Apex3D data to sum matching hits.
     '''
-    #for each csv file
-
+    # for each csv file
     for dataDir in csv_files:
         rawData = importSAMM3D(dataDir)
         mz_data, dt_data, counts = rawData['m/z'], rawData['DT'], rawData['Area']
 
-        #for each analyte in experimental target reference data 
+        # and for each analyte in experimental target reference data 
         for analyte in target_data.keys():
             formula = str(analyte)
             analyte_mz = target_data.get(analyte).get('mz')
@@ -138,6 +160,7 @@ def integrate_targets(target_data):
                             print(experimental_mz)
                             print('dt: ')
                             print(experimental_dt)
+
 
 # integrate_targets(target_data)
 
